@@ -21,23 +21,24 @@
 module priorityEncoder4bit(
 		input [3:0] i,
 		input enable,
-		output reg [2:0] out
+		output reg [2:0] out,
+        output reg noSig
     );
 	 
 	 always @ (enable or i)
 	 begin
 		if(enable)
 			if(i[3] == 1)
-				out = 3'b111;
+				{out,noSig} = 3'b110;
 			else if(i[2] == 1)
-				out = 3'b110;
+				{out,noSig} = 3'b100;
 			else if(i[1] == 1)
-				out = 3'b101;
+				{out,noSig} = 3'b010;
 			else if(i[0] == 1)
-				out = 3'b100;
+				{out,noSig} = 3'b000;
 			else
-				out = 3'b000; //Represents all off
+				{out,noSig} = 3'b001;
 		 else
-			out = 3'b000;
+			{out,noSig} = 3'b001;
 		end
 endmodule
