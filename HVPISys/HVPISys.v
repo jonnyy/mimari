@@ -18,7 +18,7 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module HPVISys (
+module HPVISys #(
     parameter pcWidth = 16,
     parameter addrLen = 2)(
     input otherInt,                 // Whether there is a pending interrupt
