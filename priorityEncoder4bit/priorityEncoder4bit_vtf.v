@@ -23,19 +23,21 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 module priorityEncoder4bit_vtf;
-
 	// Inputs
 	reg [4:0] counter;
 	reg error;
 	reg [2:0] out_tc;
+    reg out_noSig;
 
 	// Outputs
 	wire [2:0] out;
+    wire noSig;
 
 	// Instantiate the Unit Under Test (UUT)
 	priorityEncoder4bit uut (
 		.i(counter[3:0]), 
 		.enable(counter[4]), 
+        .noSig(noSig),
 		.out(out)
 	);
 
