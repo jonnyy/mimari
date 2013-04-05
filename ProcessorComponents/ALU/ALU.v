@@ -18,13 +18,13 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module ALU(V, Z, out, cout, in1, in2, cntrl);
-	parameter n = 8;
-	input [2:0] cntrl;
-	input [n-1:0] in1; // This is the side which should take ACC input
-	input [n-1:0] in2;
-	output reg [7:0] out;
-	output reg V, Z, cout; // Overflow and Zero flags and carry out
+module ALU #(
+    parameter n = 8)(
+	input [2:0] cntrl,
+	input [n-1:0] in1, in2, // in1 is the side which should take ACC input
+	output reg [7:0] out,
+	output reg V, Z, cout); // Overflow and Zero flags and carry out
+
 	reg [7:0] MSBCarry; // bit 7 will contain carry in of MSB
 	
 	always@(cntrl, in1, in2) begin
@@ -70,6 +70,5 @@ module ALU(V, Z, out, cout, in1, in2, cntrl);
 		
 		if(out == 0) Z = 1'b1; // Set zero flag
 		else Z = 1'b0;
-		
 	end
 endmodule
