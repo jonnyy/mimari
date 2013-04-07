@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date:    17:48:49 04/05/2013 
+// Create Date:    15:25:38 04/06/2013 
 // Design Name: 
-// Module Name:    LdStrReg 
+// Module Name:    IncrReg 
 // Project Name: 
 // Target Devices: 
 // Tool versions: 
@@ -18,23 +18,22 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module LdStrReg #(
+module IncrReg #(
     parameter n = 8) (
+    input clk, clr,
+    input [1:0] ctrl,
     input [n-1:0] in,
-    input clr, clk, load,
     output reg [n-1:0] out);
 
     always @(posedge clk) begin
-        // Active-low clr, has highest priority
         if(clr == 0) out <= 0;
-
-        // Load/Store
         else begin
-            // Store
-            if(load == 0) out <= out;
-
-            //Load
-            else out <= in;
+            case(ctrl)
+                2'b00: out <= out;      // Store
+                2'b01: out <= in;       // Load
+                2'b10: out <= out + 1;  // Increment by 1
+                2'b11: out <= 0;        // Clear
+            endcase
         end
     end
 endmodule
