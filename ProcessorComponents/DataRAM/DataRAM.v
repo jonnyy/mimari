@@ -22,7 +22,7 @@ module DataRAM #(
     parameter width = 8,
     parameter length = 8) (
     input indirect, writeEnable, readEnable, clr, clk,
-    input [length-1:0] readAddr, writeAddr,
+    input [length-1:0] addr
     input [width-1:0] writeData,
     output reg dataReady
     output reg [width-1:0] readData);
@@ -39,18 +39,18 @@ module DataRAM #(
 
         // Write to RAM
         else if(writeEnable == 1)
-            regArray[writeAddr] <= writeData;
+            regArray[addr] <= writeData;
 
         // Read from RAM
         else if(readEnable == 1) begin
             // Check for indirect read
             if(indirect == 1) begin
-                readData <= regArray[regArray[readAddr]]
+                readData <= #10 regArray[regArray[addr]]
                 dataReady <= 1;
             end
             // Direct read
             else begin
-                readData <= regArray[readAddr];
+                readData <= #10 regArray[addr];
                 dataReady <= 1;
             end
         end
