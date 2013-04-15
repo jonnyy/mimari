@@ -19,7 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module CacheController (
-    input clk, clr, clean, hit, isClean, isHit, indirect,
+    input clk, isClean, isHit, indirect,
     output reg dataInSel, RAMreadEnable, RAMwriteEnable,
     output reg [1:0] cacheIn);
     
@@ -36,7 +36,6 @@ module CacheController (
               w_writeRAM       = 13'b0000000000100,
               cacheWrite       = 13'b0000000000010,
               indWriteCheck    = 13'b0000000000001;
-
 
     reg isIndirect
     reg [12:0] currState, nextState;
@@ -88,8 +87,8 @@ module CacheController (
     end
 
     always @(posedge clk) begin
-        if(clr == 0) presState = start;
-        else currState = nextState;
+        if(clr == 0) presState <= start;
+        else currState <= nextState;
     end
 
     always @(currState) begin
