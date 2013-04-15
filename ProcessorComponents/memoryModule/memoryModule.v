@@ -22,8 +22,8 @@ module memoryModule #(
 	parameter ramWidth = 8,
 	parameter addrSize = 8) (
 	
-	input clk,
-	input isIndirect,
+	input clk, clrRAM, isIndirect, start,
+	input [1:0] cntrl,
 	input [addrSize-1:0] addr,
 	input [ramWidth-1:0] dataIn,
 	output [ramWidth-1:0] dataOut
@@ -31,15 +31,47 @@ module memoryModule #(
 	wire [ramWidth-1:0] wDataRAM;
 	wire [addrSize-1:0] wAddrRAM;
 	wire [ramWidth-1:0] wRAMOut;
+	wire [ramWidth-1:0] wCacheDataIn;
 	wire wRAMDataReady;
 	wire wIsHit, wIsClean;
 	wire [1:0] wCacheCntrl;
 	wire wWriteEnRAM, wReadEnRAM;
+	wire wDataInSel;
 	
-	DMCache cache(.cntrl(wCacheCntrl), .clk(clk), .addr(addr), .dataIn(dataIn), .dataOut(dataOut), .isHit(wIsHit), .isClean(wIsClean), .dataOutRAM(wDataRAM), .addrOutRAM(wAddrRAM));
-	DataRAM RAM(.indirect(), .writeEnable(), .readEnable(), .clr(), .clk(), );
-
+	DMCache cache(  .cntrl(wCacheCntrl),
+					.clk(clk), 
+					.addr(addr), 
+					.dataIn(wCacheDataIn), 
+					.dataOut(dataOut), 
+					.isHit(wIsHit), 
+					.isClean(wIsClean), 
+					.dataOutRAM(wDataRAM), 
+					.addrOutRAM(wAddrRAM));
+					
+	DataRAM RAM(.indirect(isIndirect), 
+				.writeEnable(wWriteEnRAM), 
+				.readEnable(wReadEnRAM), 
+				.clr(clrRAM), 
+				.clk(clk), 
+				.addr(wAddrRAM), 
+				.writeData(wDataRAM), 
+				.dataReady(wRAMDataReady), 
+				.readData(wRAMOut));
 	
-
+	CacheController controller(	.dataReady(wRAMDataReady),
+								.ctrl(cntrl),
+								.commence(start),
+								.clk(clk),
+								.isClean(wIsClean),
+								.isHit(wIsHit),
+								.indirect(isIndirect),
+								.dataInSel(wDataInSel),
+								.RAMreadEnable(wReadEnRAM),
+								.RAMwriteEnable(wWriteEnRAM),
+								.cacheIn(wCacheCntrl));
+								
+	mux2x1 #ramWidth dataInSelector (.sel(wDataInSel),
+									 .inputVal({dataIn, wRAMOut}),
+									 .y(wCacheDataIn));
 
 endmodule

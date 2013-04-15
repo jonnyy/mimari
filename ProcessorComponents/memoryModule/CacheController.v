@@ -55,11 +55,11 @@ module CacheController (
 			end
 
             // CACHE CLEAR
-            clrState: nextState = start;
+            clrState: begin isIndirect = isIndirect; nextState = start; end
 
             // CACHE READ
-            read: nextState = checkReadStatus;
-            checkReadStatus:
+            read: begin isIndirect = isIndirect; nextState = checkReadStatus; end
+            checkReadStatus: begin
                 case({isHit,isClean})
                     2'b00: nextState = r_writeRAM;
                     2'b01: nextState = r_fetchRAM;
@@ -67,17 +67,22 @@ module CacheController (
                     2'b11: nextState = cacheRead;
 					default: nextState = start;
                 endcase
-            r_writeRAM: nextState = r_fetchRAM;
-            r_fetchRAM: if(dataReady == 0) nextState = r_fetchRAM;
+				isIndirect = isIndirect; 
+			end
+            r_writeRAM: begin isIndirect = isIndirect; nextState = r_fetchRAM; end
+            r_fetchRAM: begin if(dataReady == 0) nextState = r_fetchRAM;
 						else nextState = cacheRead;
-            cacheRead: nextState = indReadCheck;
-            indReadCheck:
+						isIndirect = isIndirect;
+						end
+            cacheRead: begin isIndirect = isIndirect; nextState = indReadCheck; end
+            indReadCheck: begin
                 if(isIndirect == 1) begin isIndirect = 0; nextState = read; end
-                else nextState = start;
+                else begin nextState = start; isIndirect = 0; end
+				end
 
             // CACHE WRITE
-            write: nextState = checkWriteStatus;
-            checkWriteStatus:
+            write: begin isIndirect = isIndirect; nextState = checkWriteStatus; end
+            checkWriteStatus:begin
                 case({isHit,isClean})
                     2'b00: nextState = w_writeRAM;
                     2'b01: nextState = cacheWrite;
@@ -85,11 +90,13 @@ module CacheController (
                     2'b11: nextState = cacheWrite;
 					default: nextState = start;
                 endcase
-            w_writeRAM: nextState =  cacheWrite;
-            cacheWrite: nextState = indWriteCheck;
+				isIndirect = isIndirect;
+			end
+            w_writeRAM: begin isIndirect = isIndirect; nextState =  cacheWrite; end
+            cacheWrite: begin isIndirect = isIndirect; nextState = indWriteCheck; end
             indWriteCheck:
                 if(isIndirect == 1) begin isIndirect = 0; nextState = write; end
-                else nextState = start;
+                else begin isIndirect = 0; nextState = start; end
 			default: nextState = start;
         endcase
     end
