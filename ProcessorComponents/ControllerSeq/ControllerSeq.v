@@ -117,7 +117,7 @@ module ControllerSeq (
                 else nextState <= storeInd1;
             storeInd1: nextState <= intCheck;
 
-            // Load mask register TODO: ask about only loading immediately
+            // Load mask register
             lmask: nextState <= intCheck;
 
             // Branch
