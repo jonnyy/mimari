@@ -31,22 +31,11 @@ module ControllerSeq (
 
     always @(ir, intPending, dataReady, instReady, currState) begin
         case(currState)
-            // From start, switch on instruction type
-            //      -ALU type        X
-            //      -branch/jump
-            //      -subroutine      X
-            //      -load
-            //      -store
-            //      -input
-            //      -output
-            //      -return
-            //      -load mask
-
             // Starting state - reset all the things
             start: nextState <= intCheck;
 
             // Check for interrupts
-            interruptCheck:
+            intCheck:
                 if(intPending == 1) nextState <= sub0;
                 else nextState <= fetch0;
 
@@ -63,13 +52,13 @@ module ControllerSeq (
                     4'b0100: nextState <= alu0;         //X
                     4'b0101: nextState <= alu0;         //X
                     4'b0110: nextState <= alu0;         //X
-                    4'b0111: nextState <= branch0;
-                    4'b1000: nextState <= jump0
+                    4'b0111: nextState <= branch0;      //X
+                    4'b1000: nextState <= jump0;        //X
                     4'b1001: nextState <= return0;
                     4'b1010: nextState <= load0;        //X
                     4'b1011: nextState <= store0;       //X
-                    4'b1100: nextState <= in0;
-                    4'b1101: nextState <= out0;
+                    4'b1100: nextState <= in0;          //X
+                    4'b1101: nextState <= out0;         //X
                     4'b1110: nextState <= lmask0;       //X
                     4'b1111: nextState <= sub0;         //X
                     default: nextState <= intCheck;     //X
@@ -77,14 +66,16 @@ module ControllerSeq (
                     
             // Launching a subroutine/handling interrupt
             sub0: nextState <= sub1;
-            sub1: nextState <= sub2;
+            sub1: 
+                if(dataReady = 0) nextState <= sub1;
+                else nextState <= sub2;
             sub2: nextState <= sub3;
             sub3: nextState <= sub4;
             sub4: nextState <= sub5;
             sub5: nextState <= sub6;
             sub6: nextState <= sub7;
             sub7:
-                if(intPending == 1) nextState <= isr;
+                if(intPending == 1) nextState <= fetch0;
                 else nextState <= sub8;
             sub8:
                 if(dataReady == 0) nextState <= sub8;
@@ -103,20 +94,16 @@ module ControllerSeq (
             load0:
                 if(ir[5:4] == 2'b00) nextState <= intCheck;
                 else nextState <= load1;
-            loadInd:
-                if(dataReady == 0) nextState <= loadInd;
-                else nextState <= intCheck;
+            load1:
+                if(dataReady == 0) nextState <= load1;
+                else nextState <= load2;
+            load2: nextState <= intCheck;
 
             // Store
             store0:
-                if(ir[5:4] == 2'b11) nextState <= storeInd;
-                else nextState <= storeDir;
-            storeDir: nextState <= intCheck;
-            storeInd0:
-                if(dataReady == 0) nextState <= storeInd0;
-                else nextState <= storeInd1;
-            storeInd1: nextState <= intCheck;
-
+                if(dataReady == 0) nextState <= store0;
+                else nextState <= intCheck;
+            
             // Load mask register
             lmask: nextState <= intCheck;
 
@@ -124,7 +111,47 @@ module ControllerSeq (
             branch0:
                 if(dataReady == 0) nextState <= branch0;
                 else nextState <= branch1;
-            branch1: if(ir[5:4] == 2'b11) nextState <= 
+            branch1:
+                if(Z == 0) nextState <= intCheck;
+                else nextState <= branch3;
+            branch3: nextState <= intCheck;
+
+            // Jump
+            jump0:
+                if(dataReady == 0) nextState <= jump0;
+                else nextState <= jmp1;
+            jump1: nextState <= intCheck;
+
+            // In
+            in0:
+                if(inDataReady == 0) nextState <= in0;
+                else nextState <= in1;
+            in1: nextState <= in2;
+            in2: nextState <= intCheck;
+
+            // Out
+            out0: nextState <= out1
+            out1:
+                if(outDataSent == 0) nextState <= out1;
+                else nextState <= intCheck;
+
+            // Return
+            ret0:
+                if(dataReady == 0) nextState <= ret0;
+                else nextState <= ret1;
+            ret1: nextState <= ret2;
+            ret2: 
+                if(dataReady == 0) nextState <= ret2;
+                else nextState <= ret3;
+            ret3: nextState <= ret4;
+            ret4: 
+                if(dataReady == 0) nextState <= ret4;
+                else nextState <= ret5;
+            ret5: nextState <= ret6;
+            ret6:
+                if(dataReady == 0) nextState <= ret6;
+                else nextState <= ret7;
+            ret7: nextState <= intCheck;
         endcase
     end
 endmodule
