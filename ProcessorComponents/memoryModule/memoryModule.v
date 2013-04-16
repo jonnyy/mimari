@@ -26,7 +26,10 @@ module memoryModule #(
 	input [1:0] cntrl,
 	input [addrSize-1:0] addr,
 	input [ramWidth-1:0] dataIn,
-	output [ramWidth-1:0] dataOut
+	output [ramWidth-1:0] dataOut,
+	output dataReady,
+	output [12:0] TEMPstateTEMP,
+	output [1:0] hitCleanTEMP
     );
 	wire [ramWidth-1:0] wDataRAM;
 	wire [addrSize-1:0] wAddrRAM;
@@ -46,7 +49,8 @@ module memoryModule #(
 					.isHit(wIsHit), 
 					.isClean(wIsClean), 
 					.dataOutRAM(wDataRAM), 
-					.addrOutRAM(wAddrRAM));
+					.addrOutRAM(wAddrRAM),
+					.hitCleanTEMP(hitCleanTEMP));
 					
 	DataRAM RAM(.indirect(isIndirect), 
 				.writeEnable(wWriteEnRAM), 
@@ -68,7 +72,9 @@ module memoryModule #(
 								.dataInSel(wDataInSel),
 								.RAMreadEnable(wReadEnRAM),
 								.RAMwriteEnable(wWriteEnRAM),
-								.cacheIn(wCacheCntrl));
+								.cacheIn(wCacheCntrl),
+								.outputReady(dataReady),
+								.TEMPstateTEMP(TEMPstateTEMP));
 								
 	mux2x1 #ramWidth dataInSelector (.sel(wDataInSel),
 									 .inputVal({dataIn, wRAMOut}),

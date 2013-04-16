@@ -18,7 +18,7 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module DMCache(cntrl, clk, addr, dataIn, dataOut, isHit, isClean, dataOutRAM, addrOutRAM);
+module DMCache(cntrl, clk, addr, dataIn, dataOut, isHit, isClean, dataOutRAM, addrOutRAM, hitCleanTEMP);
 	parameter blocksize = 1;
 	parameter ramWidth = 8; //These need to be used to set up reg array
 	parameter addrWidth = 8;
@@ -33,10 +33,16 @@ module DMCache(cntrl, clk, addr, dataIn, dataOut, isHit, isClean, dataOutRAM, ad
 	//Outputs to RAM
 	output reg [ramWidth-1:0] dataOutRAM;
 	output reg [addrWidth-1:0] addrOutRAM;
+	output reg [1:0] hitCleanTEMP;
 	
 	integer i; // Used for clearing cache
 	reg [lineSize-1:0] regArray [(2**blockAddrBits)-1:0];
 	
+	initial begin
+		for(i=0; i<2**blockAddrBits; i=i+1)
+			regArray[i] = 0; 
+	end
+		
 
 	always @(negedge(clk)) begin
 		case(cntrl) 
@@ -64,5 +70,6 @@ module DMCache(cntrl, clk, addr, dataIn, dataOut, isHit, isClean, dataOutRAM, ad
 				regArray[addr[blockAddrBits-1:0]] <= {1'b1, addr[addrWidth-1:blockAddrBits], dataIn};
 			end
 		endcase
+		hitCleanTEMP <= {isHit, isClean};
 	end
 endmodule

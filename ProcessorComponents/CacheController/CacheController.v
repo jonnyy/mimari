@@ -21,8 +21,9 @@
 module CacheController (
     input clk, isClean, isHit, indirect, commence, dataReady,
 	input [1:0] ctrl,
-    output reg dataInSel, RAMreadEnable, RAMwriteEnable,
-    output reg [1:0] cacheIn);
+    output reg dataInSel, RAMreadEnable, RAMwriteEnable, outputReady,
+    output reg [1:0] cacheIn,
+	output reg [12:0] TEMPstateTEMP);
     
     parameter start            = 13'b1000000000000,
               clrState         = 13'b0100000000000,
@@ -55,11 +56,11 @@ module CacheController (
 			end
 
             // CACHE CLEAR
-            clrState: nextState = start;
+            clrState: begin isIndirect = isIndirect; nextState = start; end
 
             // CACHE READ
-            read: nextState = checkReadStatus;
-            checkReadStatus:
+            read: begin isIndirect = isIndirect; nextState = checkReadStatus; end
+            checkReadStatus: begin
                 case({isHit,isClean})
                     2'b00: nextState = r_writeRAM;
                     2'b01: nextState = r_fetchRAM;
@@ -67,17 +68,22 @@ module CacheController (
                     2'b11: nextState = cacheRead;
 					default: nextState = start;
                 endcase
-            r_writeRAM: nextState = r_fetchRAM;
-            r_fetchRAM: if(dataReady == 0) nextState = r_fetchRAM;
+				isIndirect = isIndirect; 
+			end
+            r_writeRAM: begin isIndirect = isIndirect; nextState = r_fetchRAM; end
+            r_fetchRAM: begin if(dataReady == 0) nextState = r_fetchRAM;
 						else nextState = cacheRead;
-            cacheRead: nextState = indReadCheck;
-            indReadCheck:
+						isIndirect = isIndirect;
+						end
+            cacheRead: begin isIndirect = isIndirect; nextState = indReadCheck; end
+            indReadCheck: begin
                 if(isIndirect == 1) begin isIndirect = 0; nextState = read; end
-                else nextState = start;
+                else begin nextState = start; isIndirect = 0; end
+				end
 
             // CACHE WRITE
-            write: nextState = checkWriteStatus;
-            checkWriteStatus:
+            write: begin isIndirect = isIndirect; nextState = checkWriteStatus; end
+            checkWriteStatus:begin
                 case({isHit,isClean})
                     2'b00: nextState = w_writeRAM;
                     2'b01: nextState = cacheWrite;
@@ -85,11 +91,13 @@ module CacheController (
                     2'b11: nextState = cacheWrite;
 					default: nextState = start;
                 endcase
-            w_writeRAM: nextState =  cacheWrite;
-            cacheWrite: nextState = indWriteCheck;
+				isIndirect = isIndirect;
+			end
+            w_writeRAM: begin isIndirect = isIndirect; nextState =  cacheWrite; end
+            cacheWrite: begin isIndirect = isIndirect; nextState = indWriteCheck; end
             indWriteCheck:
                 if(isIndirect == 1) begin isIndirect = 0; nextState = write; end
-                else nextState = start;
+                else begin isIndirect = 0; nextState = start; end
 			default: nextState = start;
         endcase
     end
@@ -106,73 +114,87 @@ module CacheController (
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
+
             end
             clrState: begin
                 cacheIn = 2'b00;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
             read: begin
                 cacheIn = 2'b01;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
             checkReadStatus: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
             r_writeRAM: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b1;
+				outputReady = 1'b0;
             end
             r_fetchRAM: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b1;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
             cacheRead: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b1;
             end
             write: begin
                 cacheIn = 2'b01;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
             checkWriteStatus: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
             w_writeRAM: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b1;
+				outputReady = 1'b0;
             end
             cacheWrite: begin
                 cacheIn = 2'b11;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b1;
             end
             default: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
         endcase
+		TEMPstateTEMP = currState;
     end
 endmodule

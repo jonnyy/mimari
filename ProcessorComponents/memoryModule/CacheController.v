@@ -21,8 +21,9 @@
 module CacheController (
     input clk, isClean, isHit, indirect, commence, dataReady,
 	input [1:0] ctrl,
-    output reg dataInSel, RAMreadEnable, RAMwriteEnable,
-    output reg [1:0] cacheIn);
+    output reg dataInSel, RAMreadEnable, RAMwriteEnable, outputReady,
+    output reg [1:0] cacheIn,
+	output reg [12:0] TEMPstateTEMP);
     
     parameter start            = 13'b1000000000000,
               clrState         = 13'b0100000000000,
@@ -113,73 +114,87 @@ module CacheController (
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
+
             end
             clrState: begin
                 cacheIn = 2'b00;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
             read: begin
                 cacheIn = 2'b01;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
             checkReadStatus: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
             r_writeRAM: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b1;
+				outputReady = 1'b0;
             end
             r_fetchRAM: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b1;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
             cacheRead: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b1;
             end
             write: begin
                 cacheIn = 2'b01;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
             checkWriteStatus: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
             w_writeRAM: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b1;
+				outputReady = 1'b0;
             end
             cacheWrite: begin
                 cacheIn = 2'b11;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b1;
             end
             default: begin
                 cacheIn = 2'b10;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
+				outputReady = 1'b0;
             end
         endcase
+		TEMPstateTEMP = currState;
     end
 endmodule

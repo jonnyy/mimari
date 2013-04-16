@@ -28,11 +28,16 @@ module DataRAM #(
     output reg [width-1:0] readData);
 
     reg [width-1:0] regArray [2**length-1:0];
+	integer i;
 
+	initial begin
+	   for(i=0; i<2**length; i=i+1)
+		regArray[i] = 0; 
+	end
+		
     always @(posedge clk) begin
         // Clear everything in data RAM
         if(clr == 0) begin:clear
-            integer i;
             for(i=0; i<2**length; i=i+1)
                 regArray[i] <= 0;
         end

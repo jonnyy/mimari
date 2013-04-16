@@ -25,16 +25,21 @@
 module memoryModule_vtf;
 
 	// Inputs
+	reg [21:0] counter;
 	reg clk;
 	reg clrRAM;
-	reg isIndirect;
 	reg start;
+	reg isIndirect;
+
 	reg [1:0] cntrl;
 	reg [7:0] addr;
 	reg [7:0] dataIn;
 
 	// Outputs
 	wire [7:0] dataOut;
+	wire dataReady;
+	wire [12:0] TEMPstateTEMP;
+	wire [1:0] hitCleanTEMP;
 
 	// Instantiate the Unit Under Test (UUT)
 	memoryModule uut (
@@ -45,11 +50,15 @@ module memoryModule_vtf;
 		.cntrl(cntrl), 
 		.addr(addr), 
 		.dataIn(dataIn), 
-		.dataOut(dataOut)
+		.dataOut(dataOut),
+		.dataReady(dataReady),
+		.TEMPstateTEMP(TEMPstateTEMP),
+		.hitCleanTEMP(hitCleanTEMP)
 	);
 
 	initial begin
 		// Initialize Inputs
+		counter = 0;
 		clk = 0;
 		clrRAM = 0;
 		isIndirect = 0;
@@ -66,7 +75,15 @@ module memoryModule_vtf;
 	end
 	
 	always begin
-		#5 {isIndirect, start, cntrl, addr, dataIn} = {isIndirect, start, cntrl, addr, dataIn} + 1;
+		//write sequence
+		#5 counter = counter + 1;
+		clrRAM = ~counter[21];
+		start = ~counter[20];
+		isIndirect = counter[19];
+		cntrl = ~counter[11:10];
+		addr = counter[9:1];
+		dataIn = counter[9:1];		
+		clk = counter[0];
 	end
       
 endmodule

@@ -22,17 +22,22 @@ module DataRAM #(
     parameter width = 8,
     parameter length = 8) (
     input indirect, writeEnable, readEnable, clr, clk,
-    input [length-1:0] addr
+    input [length-1:0] addr,
     input [width-1:0] writeData,
-    output reg dataReady
+    output reg dataReady,
     output reg [width-1:0] readData);
 
     reg [width-1:0] regArray [2**length-1:0];
+	integer i;
 
+	initial begin
+	   for(i=0; i<2**length; i=i+1)
+		regArray[i] = 0; 
+	end
+		
     always @(posedge clk) begin
         // Clear everything in data RAM
         if(clr == 0) begin:clear
-            integer i;
             for(i=0; i<2**length; i=i+1)
                 regArray[i] <= 0;
         end
@@ -45,7 +50,7 @@ module DataRAM #(
         else if(readEnable == 1) begin
             // Check for indirect read
             if(indirect == 1) begin
-                readData <= #10 regArray[regArray[addr]]
+                readData <= #10 regArray[regArray[addr]];
                 dataReady <= 1;
             end
             // Direct read
@@ -57,7 +62,7 @@ module DataRAM #(
 
         // Maintain same output if not reading/writing
         else begin
-            readData <= readData
+            readData <= readData;
             dataReady <= 0;
         end
     end
