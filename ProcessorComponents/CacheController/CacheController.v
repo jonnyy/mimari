@@ -114,7 +114,7 @@ module CacheController (
             cacheRead: nextState = indReadCheck;
             indReadCheck:
                 if(indirect == 1) nextState = indRead;
-                else begin nextState = start;
+                else begin nextState = start; end
 
             // CACHE WRITE
             write: nextState = checkWriteStatus;
@@ -126,7 +126,6 @@ module CacheController (
                     2'b11: nextState = cacheWrite;
 					default: nextState = start;
                 endcase
-				isIndirect = isIndirect;
 			end
             w_writeRAM: nextState = cacheWrite;
             cacheWrite: nextState = indWriteCheck;
@@ -192,7 +191,7 @@ module CacheController (
 				outputReady = 1'b0;
             end
             r_cacheWrite: begin
-                cacheIn = 2'11;
+                cacheIn = 2'b11;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
@@ -255,7 +254,7 @@ module CacheController (
 				outputReady = 1'b0;
             end
             indCacheWrite: begin
-                cacheIn = 2'11;
+                cacheIn = 2'b11;
                 dataInSel = cacheIn[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;

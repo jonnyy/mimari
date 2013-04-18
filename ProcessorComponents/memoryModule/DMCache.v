@@ -54,7 +54,7 @@ module DMCache(cntrl, clk, addr, dataIn, dataOut, isHit, isClean, dataOutRAM, ad
 			end	
 			2'b01: begin //Check Status
 				if(regArray[addr[blockAddrBits-1:0]][lineSize-2:ramWidth] == addr[ramWidth-1:blockAddrBits]) begin //HIT!!!
-					isHit <= 1'b1;				
+					isHit <= 1'b1;
 				end
 				else begin // MISS!!!
 					isHit <= 1'b0;

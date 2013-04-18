@@ -28,13 +28,15 @@ module memoryModule #(
 	input [ramWidth-1:0] dataIn,
 	output [ramWidth-1:0] dataOut,
 	output dataReady,
-	output [12:0] TEMPstateTEMP,
-	output [1:0] hitCleanTEMP
+	output [18:0] TEMPstateTEMP,
+	output [1:0] hitCleanTEMP,
+	output [addrSize-1:0] wCacheAddr
     );
 	wire [ramWidth-1:0] wDataRAM;
-	wire [addrSize-1:0] wAddrRAM;
+	wire [addrSize-1:0] wAddrRAM,  wAddr;
 	wire [ramWidth-1:0] wRAMOut;
 	wire [ramWidth-1:0] wCacheDataIn;
+	wire [ramWidth-1:0] wLockedDataIn;
 	wire wRAMDataReady;
 	wire wIsHit, wIsClean;
 	wire [1:0] wCacheCntrl;
@@ -43,7 +45,7 @@ module memoryModule #(
 	
 	DMCache cache(  .cntrl(wCacheCntrl),
 					.clk(clk), 
-					.addr(addr), 
+					.addr(wCacheAddr), 
 					.dataIn(wCacheDataIn), 
 					.dataOut(dataOut), 
 					.isHit(wIsHit), 
@@ -62,22 +64,31 @@ module memoryModule #(
 				.dataReady(wRAMDataReady), 
 				.readData(wRAMOut));
 	
-	CacheController controller(	.dataReady(wRAMDataReady),
+	CacheController controller(	.dataIn(dataIn),
+								.dataReady(wRAMDataReady),
 								.ctrl(cntrl),
 								.commence(start),
 								.clk(clk),
 								.isClean(wIsClean),
 								.isHit(wIsHit),
 								.indirect(isIndirect),
+								.addr(wAddr),
 								.dataInSel(wDataInSel),
 								.RAMreadEnable(wReadEnRAM),
 								.RAMwriteEnable(wWriteEnRAM),
 								.cacheIn(wCacheCntrl),
 								.outputReady(dataReady),
-								.TEMPstateTEMP(TEMPstateTEMP));
+								.cacheAddr(wCacheAddr),
+								.TEMPstateTEMP(TEMPstateTEMP),
+								.addrSel(wAddrInSel),
+								.lockedDataIn(wLockedDataIn));
 								
 	mux2x1 #ramWidth dataInSelector (.sel(wDataInSel),
-									 .inputVal({dataIn, wRAMOut}),
+									 .inputVal({wLockedDataIn, wRAMOut}),
 									 .y(wCacheDataIn));
+									 
+	mux2x1 #ramWidth addrSelector (.sel(wAddrInSel),
+									 .inputVal({dataOut, addr}),
+									 .y(wAddr));
 
 endmodule
