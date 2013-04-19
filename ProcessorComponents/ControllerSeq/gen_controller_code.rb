@@ -4,6 +4,7 @@ require 'csv'
 csv = CSV.read(ARGV.first)
 DEFAULT_STATES_LIST = "states_list.txt"
 DEFAULT_VERILOG_OUTPUT = "state_outputs.v"
+DEFAULT_PARAMETER_OUTPUT = "paramter_encoding.v"
 
 # Remove first row of submodule names for each signal
 csv.shift
@@ -44,3 +45,20 @@ f.close
 
 # Write state names to file
 File.open(DEFAULT_STATES_LIST, "w") { |f| f.puts(states) }
+
+# Open parameter encoding file for writing
+param = File.open(DEFAULT_PARAMETER_OUTPUT, "w")
+
+param.puts "parameter"
+states.each_with_index do |s, i|
+  binary = "0" * states.length
+  binary[i] = "1"
+  binary = "#{states.length}'b" + binary
+  param.print "    #{s} = #{binary}" 
+  if i == (states.length - 1)
+    param.puts ";"
+  else
+    param.puts ","
+  end
+end
+param.close
