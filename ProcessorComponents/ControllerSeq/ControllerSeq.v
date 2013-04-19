@@ -56,7 +56,7 @@ module ControllerSeq (
                     4'b0110: nextState = alu0;         //X
                     4'b0111: nextState = branch0;      //X
                     4'b1000: nextState = jump0;        //X
-                    4'b1001: nextState = return0;
+                    4'b1001: nextState = ret0;         //X
                     4'b1010: nextState = load0;        //X
                     4'b1011: nextState = store0;       //X
                     4'b1100: nextState = in0;          //X
@@ -73,12 +73,17 @@ module ControllerSeq (
                 if(dataReady = 0) nextState = sub1;
                 else nextState = sub2;
             sub2: nextState = sub3;
-            sub3: nextState = sub4;
+            sub3:
+                if(dataReady = 0) nextState = sub3;
+                else nextState = sub4;
             sub4: nextState = sub5;
-            sub5: nextState = sub6;
+            sub5:
+                if(dataReady = 0) nextState = sub5;
+                else nextState = sub6;
             sub6: nextState = sub7;
             sub7:
-                if(intPending == 1) nextState = isr;
+                if(dataReady = 0) nextState = sub7;
+                else if(intPending == 1)  nextState = isr;
                 else nextState = sub8;
             sub8:
                 if(dataReady == 0) nextState = sub8;
