@@ -28,17 +28,16 @@ module hitTester_vtf;
 	reg [21:0] counter;
 	reg clk;
 	reg clrRAM;
-	reg start;
 	reg isIndirect;
 
 	reg [1:0] cntrl;
 	reg [7:0] addr;
 	reg [7:0] lockAddr;
-	reg [7:0] dataIn;
+	reg [15:0] dataIn;
 
 	// Outputs
-	wire [7:0] dataOut;
-	reg [7:0] dataOut_tc;
+	wire [15:0] dataOut;
+	reg [15:0] dataOut_tc;
 	wire dataReady;
 	wire [18:0] TEMPstateTEMP;
 	wire [1:0] hitCleanTEMP;
@@ -51,7 +50,6 @@ module hitTester_vtf;
 		.clk(clk), 
 		.clrRAM(clrRAM), 
 		.isIndirect(isIndirect), 
-		.start(start), 
 		.cntrl(cntrl), 
 		.addr(addr), 
 		.dataIn(dataIn), 
@@ -68,7 +66,6 @@ module hitTester_vtf;
 		clk = 0;
 		clrRAM = 0;
 		isIndirect = 0;
-		start = 0;
 		cntrl = 0;
 		addr = 0;
 		dataIn = 0;
@@ -86,7 +83,6 @@ module hitTester_vtf;
 		//write sequence
 		#5 counter <= counter + 1;
 		clrRAM <= ~counter[17];
-		start <= ~counter[18];
 		isIndirect <= counter[16];
 		cntrl <= ~counter[15:14];
 		addr[7:4] <= counter[13:9];

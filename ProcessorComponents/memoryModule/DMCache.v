@@ -27,7 +27,8 @@ module DMCache(cntrl, clk, addr, dataIn, dataOut, isHit, isClean, dataOutRAM, ad
 	
 	input [1:0] cntrl;
 	input clk;
-	input [ramWidth-1:0] addr, dataIn; //Should maybe simplify to only be one thing for address instead of two kinds of addresses???
+	input [ramWidth-1:0] dataIn; //Should maybe simplify to only be one thing for address instead of two kinds of addresses???
+	input [addrWidth-1:0] addr;
 	output reg[ramWidth-1:0] dataOut;
 	output reg isHit, isClean;
 	//Outputs to RAM
@@ -53,7 +54,7 @@ module DMCache(cntrl, clk, addr, dataIn, dataOut, isHit, isClean, dataOutRAM, ad
 				end
 			end	
 			2'b01: begin //Check Status
-				if(regArray[addr[blockAddrBits-1:0]][lineSize-2:ramWidth] == addr[ramWidth-1:blockAddrBits]) begin //HIT!!!
+				if(regArray[addr[blockAddrBits-1:0]][lineSize-2:ramWidth] == addr[addrWidth-1:blockAddrBits]) begin //HIT!!!
 					isHit <= 1'b1;
 				end
 				else begin // MISS!!!

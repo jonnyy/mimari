@@ -41,6 +41,8 @@ module runProcessor;
 	wire [8:0] tmpPCout; //TEMP
 	wire tmpDataReady; //TEMP
 	wire [15:0] tmpIRAMout; //TEMP
+	wire [18:0] tmpIRAMState; //TEMP
+	wire [7:0] tmpIRAMCacheAddr; //TEMP
 
 
 	// Instantiate the Unit Under Test (UUT)
@@ -58,7 +60,9 @@ module runProcessor;
 		.tmpIRout(tmpIRout),
 		.tmpPCout(tmpPCout),
 		.tmpDataReady(tmpDataReady),
-		.tmpIRAMout(tmpIRAMout)
+		.tmpIRAMout(tmpIRAMout),
+		.tmpIRAMState(tmpIRAMState),
+		.tmpIRAMCacheAddr(tmpIRAMCacheAddr)
 	);
 
 	initial begin

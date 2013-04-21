@@ -37,11 +37,13 @@ module DMCache(cntrl, clk, addr, dataIn, dataOut, isHit, isClean, dataOutRAM, ad
 	//output reg [1:0] hitCleanTEMP;
 	
 	integer i; // Used for clearing cache
+	integer j;
 	reg [lineSize-1:0] regArray [(2**blockAddrBits)-1:0];
 	
 	initial begin
 		for(i=0; i<2**blockAddrBits; i=i+1)
-			regArray[i] = 0; 
+			for(j=0; j<lineSize; j=j+1)
+				regArray[i][j] = 1'b1;
 	end
 		
 

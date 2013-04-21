@@ -19,10 +19,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module memoryModule #(
-	parameter ramWidth = 8,
+	parameter ramWidth = 16,
 	parameter addrSize = 8) (
 	
-	input clk, clrRAM, isIndirect, start,
+	input clk, clrRAM, isIndirect,
 	input [1:0] cntrl,
 	input [addrSize-1:0] addr,
 	input [ramWidth-1:0] dataIn,
@@ -42,53 +42,63 @@ module memoryModule #(
 	wire [1:0] wCacheCntrl;
 	wire wWriteEnRAM, wReadEnRAM;
 	wire wDataInSel;
-	
-	DMCache cache(  .cntrl(wCacheCntrl),
-					.clk(clk), 
-					.addr(wCacheAddr), 
-					.dataIn(wCacheDataIn), 
-					.dataOut(dataOut), 
-					.isHit(wIsHit), 
-					.isClean(wIsClean), 
-					.dataOutRAM(wDataRAM), 
-					.addrOutRAM(wAddrRAM),
-					.hitCleanTEMP(hitCleanTEMP));
+	//wire [addrSize-1:0] wCacheAddr;
+
+	DMCache #(.blocksize(1), .ramWidth(ramWidth), .addrWidth(addrSize), .lineSize(ramWidth+5), .blockAddrBits(4)) cache(  
+		.cntrl(wCacheCntrl),
+		.clk(clk), 
+		.addr(wCacheAddr), 
+		.dataIn(wCacheDataIn), 
+		.dataOut(dataOut), 
+		.isHit(wIsHit), 
+		.isClean(wIsClean), 
+		.dataOutRAM(wDataRAM), 
+		.addrOutRAM(wAddrRAM),
+		.hitCleanTEMP(hitCleanTEMP)
+	);
 					
-	DataRAM RAM(.indirect(isIndirect), 
-				.writeEnable(wWriteEnRAM), 
-				.readEnable(wReadEnRAM), 
-				.clr(clrRAM), 
-				.clk(clk), 
-				.addr(wAddrRAM), 
-				.writeData(wDataRAM), 
-				.dataReady(wRAMDataReady), 
-				.readData(wRAMOut));
+	DataRAM #(.width(ramWidth), .length(addrSize)) RAM(
+		.indirect(isIndirect), 
+		.writeEnable(wWriteEnRAM), 
+		.readEnable(wReadEnRAM), 
+		.clr(clrRAM), 
+		.clk(clk), 
+		.addr(wAddrRAM), 
+		.writeData(wDataRAM), 
+		.dataReady(wRAMDataReady), 
+		.readData(wRAMOut)
+	);
 	
-	CacheController controller(	.dataIn(dataIn),
-								.dataReady(wRAMDataReady),
-								.ctrl(cntrl),
-								.commence(start),
-								.clk(clk),
-								.isClean(wIsClean),
-								.isHit(wIsHit),
-								.indirect(isIndirect),
-								.addr(wAddr),
-								.dataInSel(wDataInSel),
-								.RAMreadEnable(wReadEnRAM),
-								.RAMwriteEnable(wWriteEnRAM),
-								.cacheIn(wCacheCntrl),
-								.outputReady(dataReady),
-								.cacheAddr(wCacheAddr),
-								.TEMPstateTEMP(TEMPstateTEMP),
-								.addrSel(wAddrInSel),
-								.lockedDataIn(wLockedDataIn));
+	CacheController #(.ramWidth(ramWidth), .addrSize(addrSize)) controller(	
+		.dataIn(dataIn),
+		.dataReady(wRAMDataReady),
+		.ctrl(cntrl),
+		.clk(clk),
+		.isClean(wIsClean),
+		.isHit(wIsHit),
+		.indirect(isIndirect),
+		.addr(wAddr),
+		.dataInSel(wDataInSel),
+		.RAMreadEnable(wReadEnRAM),
+		.RAMwriteEnable(wWriteEnRAM),
+		.cacheIn(wCacheCntrl),
+		.outputReady(dataReady),
+		.cacheAddr(wCacheAddr),
+		.TEMPstateTEMP(TEMPstateTEMP),
+		.addrSel(wAddrInSel),
+		.lockedDataIn(wLockedDataIn)
+	);
 								
-	mux2x1 #ramWidth dataInSelector (.sel(wDataInSel),
-									 .inputVal({wLockedDataIn, wRAMOut}),
-									 .y(wCacheDataIn));
+	mux2x1 #ramWidth dataInSelector (
+		.sel(wDataInSel),
+		.inputVal({wLockedDataIn, wRAMOut}),
+		.y(wCacheDataIn)
+	);
 									 
-	mux2x1 #ramWidth addrSelector (.sel(wAddrInSel),
-									 .inputVal({dataOut, addr}),
-									 .y(wAddr));
+	mux2x1 #addrSize addrSelector (
+		.sel(wAddrInSel),
+		.inputVal({dataOut[addrSize-1:0], addr}),
+		.y(wAddr)
+	);
 
 endmodule

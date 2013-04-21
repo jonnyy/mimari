@@ -25,7 +25,8 @@ module DataRAM #(
     input [length-1:0] addr,
     input [width-1:0] writeData,
     output reg dataReady,
-    output reg [width-1:0] readData);
+    output reg [width-1:0] readData
+	);
 
     reg [width-1:0] regArray [2**length-1:0];
 	integer i, j;
@@ -50,7 +51,6 @@ module DataRAM #(
 			end
 		end
 	end
-		
     always @(negedge clk) begin
         // Clear everything in data RAM
         if(clr == 0) begin:clear

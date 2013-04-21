@@ -34,8 +34,14 @@ module Processor #(
 	output [5:0] tmpIRout, // TEMP
 	output [8:0] tmpPCout, //TEMP
 	output tmpDataReady, //TEMP
-	output [15:0] tmpIRAMout //TEMP
+	output [15:0] tmpIRAMout, //TEMP
+	output [1:0] IRAMcntrlTEMP, //TEMP
+	output [18:0] tmpIRAMState, //TEMP
+	output [7:0] tmpIRAMCacheAddr //TEMP
     );
+	
+	// TEMP wires
+	wire [18:0] wIRAMState, wDRAMState;
 	
 	//Register Basics
 	wire wIRclr, wACCclr, wCCclr, wMARclr; //Clear flags
@@ -89,6 +95,9 @@ module Processor #(
 	assign tmpPCout = wPCout;
 	assign tmpDataReady = wIRAMDataReady;
 	assign tmpIRAMout = wIRAMout;
+	assign IRAMcntrlTEMP = wIMemCtrl;
+	assign tmpIRAMState = wIRAMState;
+
 	ControllerSeq theController(
 		.ir(wIRAMout[IRamWidth-3:IRamWidth-IRWidth-2]),//13:8 {opcode,addrMode}
 		.intPending(wIntPending),
@@ -138,12 +147,14 @@ module Processor #(
 	memoryModule #(.addrSize(addrSize), .ramWidth(IRamWidth)) InstructionRAM(
 		.clk(clk), //1 bit inputs 
 		.clrRAM(/*wIRAMclr*/1'b1), 
-		.isIndirect(1'b1), 
+		.isIndirect(1'b0), 
 		.cntrl(2'b10/*wIMemCtrl*/), // 2 bit input
 		.addr(8'b00000000/*wPCout*/), //addrSize input
 		.dataIn({dummyVal, dummyVal}), //ramSize input
 		.dataOut(wIRAMout), //ramSize output
-		.dataReady(wIRAMDataReady) // 1 bit output
+		.dataReady(wIRAMDataReady), // 1 bit output
+		.tmpCacheState(wIRAMState),
+		.tmpCacheAddr(tmpIRAMCacheAddr)
 	);	
 	
 	memoryModule #(.addrSize(addrSize), .ramWidth(DRamWidth)) DataRAM(
@@ -154,7 +165,9 @@ module Processor #(
 		.addr(wDaddrIn), //addrSize input
 		.dataIn(wDRAMDataIn), //ramSize input
 		.dataOut(wDRAMout), //ramSize output
-		.dataReady(wDRAMDataReady) // 1 bit output
+		.dataReady(wDRAMDataReady), // 1 bit output
+		.tmpCacheState(wDRAMState),
+		.tmpCacheAddr(tmpDRAMCacheAddr)
 	);
 	
 	mux2x1 #(.size(DRamWidth)) dAddrMux(
