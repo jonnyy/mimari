@@ -3,9 +3,9 @@
 // Company: University of Kentucky
 // Engineer: Jonathan Lutz
 // 
-// Create Date:    18:09:09 01/29/2013 
+// Create Date:    20:59:23 02/11/2013 
 // Design Name: 
-// Module Name:    mux2x1
+// Module Name:    DFlipFlop 
 // Project Name: 
 // Target Devices: 
 // Tool versions: 
@@ -18,17 +18,17 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module mux2x1 #(
-	parameter size = 8)(
-    input sel,
-    input [size*2-1:0] inputVal,
-    output reg [size-1:0] y
+module DFlipFlop(
+	input D, clk, clr, set,
+	output reg Q,
+	output Qbar
     );
-
-	always @(sel, inputVal) begin
-		case(sel)
-			1'b0: y = inputVal[size-1:0];
-			1'b1: y = inputVal[(size*2)-1:size];
-		endcase
+	
+	always @(posedge clk) begin
+		if(clr == 0) Q <= 0;
+		else if(set == 0) Q <= 1;
+		else Q <= D;
 	end
+	
+	assign Qbar = ~Q;
 endmodule

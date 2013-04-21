@@ -18,17 +18,16 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module mux2x1 #(
+module paramMux #(
+	parameter muxType = 4,
+	parameter selLines = 2,
 	parameter size = 8)(
-    input sel,
-    input [size*2-1:0] inputVal,
+    input [selLines-1:0] sel,
+    input [size*4-1:0] inputVal,
     output reg [size-1:0] y
     );
 
 	always @(sel, inputVal) begin
-		case(sel)
-			1'b0: y = inputVal[size-1:0];
-			1'b1: y = inputVal[(size*2)-1:size];
-		endcase
+		y = inputVal[(size*(sel+1))-1:(size*sel)];
 	end
 endmodule

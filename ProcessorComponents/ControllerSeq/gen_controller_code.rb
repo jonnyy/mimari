@@ -49,12 +49,17 @@ File.open(DEFAULT_STATES_LIST, "w") { |f| f.puts(states) }
 # Open parameter encoding file for writing
 param = File.open(DEFAULT_PARAMETER_OUTPUT, "w")
 
+# Remove 'default' state from list of states so we don't include it in the 
+# list of states
+puts states.pop
+
 param.puts "parameter"
 states.each_with_index do |s, i|
   binary = "0" * states.length
   binary[i] = "1"
-  binary = "#{states.length}'b" + binary
-  param.print "    #{s} = #{binary}" 
+  hex = "%0#{(states.length/4.0).ceil}x" % binary.to_i(2)
+  hex = "#{states.length}'h" + hex
+  param.print "    #{s} = #{hex}" 
   if i == (states.length - 1)
     param.puts ";"
   else
