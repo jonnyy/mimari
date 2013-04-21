@@ -29,15 +29,17 @@ module Processor #(
 	input clk, reset, inDataReady, outACK,
 	output [DRamWidth-1:0] out,
 	output outDataReady, inACK,
-	output [42:0] currState, //TEMP
-	output [DRamWidth-1:0] tmpACCout, //TEMP
-	output [5:0] tmpIRout, // TEMP
-	output [8:0] tmpPCout, //TEMP
-	output tmpDataReady, //TEMP
-	output [15:0] tmpIRAMout, //TEMP
-	output [1:0] IRAMcntrlTEMP, //TEMP
-	output [18:0] tmpIRAMState, //TEMP
-	output [7:0] tmpIRAMCacheAddr //TEMP
+	output [43:0] currState, //TEMP
+	output [5:0] IRout, // TEMP
+	output [1:0] addrMode, // TEMP
+	output [7:0] PCout, ACCout, MARout, SPout, //TEMP
+	output [1:0] CCout, //TEMP
+	output IRAMDataReady, //TEMP
+	output [15:0] IRAMout, //TEMP
+	output [1:0] IRAMctrl, //TEMP
+	output [18:0] InstMemState, DataMemState, //TEMP
+	output [7:0] IRAMCacheAddr, DRAMCacheAddr, //TEMP
+	output [1:0] cacheCntrlTEMP //TEMP
     );
 	
 	// TEMP wires
@@ -89,24 +91,30 @@ module Processor #(
 	//HVPI
 	wire wIntPending, wLdMask, wLdIntReg, wIntRegclr, wMaskclr, wIntDisable, wPendclr;
 	wire [addrSize-1:0] wIsrAddr;
-	//FIGURE OUT COMMENCE DATA VARIABLES...
-	//Does IR into controller come from IR or directly from read?
-	assign tmpIRout = wIRAMout[IRamWidth-3:IRamWidth-IRWidth-2];
-	assign tmpPCout = wPCout;
-	assign tmpDataReady = wIRAMDataReady;
-	assign tmpIRAMout = wIRAMout;
-	assign IRAMcntrlTEMP = wIMemCtrl;
-	assign tmpIRAMState = wIRAMState;
+	
+	// Register outputs
+	assign PCout = wPCout;
+	assign IRout = wIRout;
+	assign SPout = wSPout;
+	assign MARout = wMARout;
+	assign addrMode = wIRout[1:0];
+	assign CCout = wCCout;
+	assign ACCout = wACCout;
+	assign PCout = wPCout;
+	
+	assign IRAMDataReady = wIRAMDataReady;
+	assign IRAMout = wIRAMout;
+	assign IRAMctrl = wIMemCtrl;
 
 	ControllerSeq theController(
-		.ir(wIRAMout[IRamWidth-3:IRamWidth-IRWidth-2]),//13:8 {opcode,addrMode}
+		.ir(wIRout),//13:8 {opcode,addrMode}
 		.intPending(wIntPending),
 		.clk(clk), 
 		.dataReady(wDRAMDataReady), 
 		.instReady(wIRAMDataReady), 
 		.inDataReady(inDataReady), 
 		.restart(reset), 
-		.Z(wZ), 
+		.Z(wCCout[0]), 
 		.outDataSent(outACK),//END of inputs
 		.ACCld(wACCload), //Begin single bit outputs 
 		.ACCclr(wACCclr), 
@@ -146,15 +154,16 @@ module Processor #(
 	
 	memoryModule #(.addrSize(addrSize), .ramWidth(IRamWidth)) InstructionRAM(
 		.clk(clk), //1 bit inputs 
-		.clrRAM(/*wIRAMclr*/1'b1), 
+		.clrRAM(wIRAMclr), 
 		.isIndirect(1'b0), 
-		.cntrl(2'b10/*wIMemCtrl*/), // 2 bit input
-		.addr(8'b00000000/*wPCout*/), //addrSize input
+		.cntrl(wIMemCtrl), // 2 bit input
+		.addr(wPCout), //addrSize input
 		.dataIn({dummyVal, dummyVal}), //ramSize input
 		.dataOut(wIRAMout), //ramSize output
 		.dataReady(wIRAMDataReady), // 1 bit output
-		.tmpCacheState(wIRAMState),
-		.tmpCacheAddr(tmpIRAMCacheAddr)
+		.tmpCacheState(InstMemState),
+		.tmpCacheAddr(IRAMCacheAddr),
+		.cacheCntrlTEMP(cacheCntrlTEMP)
 	);	
 	
 	memoryModule #(.addrSize(addrSize), .ramWidth(DRamWidth)) DataRAM(
@@ -166,8 +175,8 @@ module Processor #(
 		.dataIn(wDRAMDataIn), //ramSize input
 		.dataOut(wDRAMout), //ramSize output
 		.dataReady(wDRAMDataReady), // 1 bit output
-		.tmpCacheState(wDRAMState),
-		.tmpCacheAddr(tmpDRAMCacheAddr)
+		.tmpCacheState(DataMemState),
+		.tmpCacheAddr(DRAMCacheAddr)
 	);
 	
 	mux2x1 #(.size(DRamWidth)) dAddrMux(
@@ -238,9 +247,6 @@ module Processor #(
 		.out(wACCout) //n bit size output
 	);
 	
-	// TEMP
-	assign tmpACCout = wACCout;
-	
 	mux4x1 #(.size(DRamWidth)) ACCinMux(
 		.sel(wACCsel),
 		.inputVal({wMARout, wALUout, wDRAMout, in}), //size *2 input ({11, 10, 01, 00})
@@ -258,7 +264,7 @@ module Processor #(
 	
 	mux2x1 #(.size(ccWidth)) CCinMux(
 		.sel(wCCsel),
-		.inputVal({wDRAMout[DRamWidth-1:DRamWidth-ccWidth], wV, wZ}), //size *2 input (1 selects MSB input)
+		.inputVal({{wV, wZ}, wDRAMout[DRamWidth-1:DRamWidth-ccWidth]}), //size *2 input (1 selects MSB input)
 		.y(wCCDataIn) //output of size
 	);
 	

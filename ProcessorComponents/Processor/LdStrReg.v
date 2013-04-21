@@ -24,7 +24,7 @@ module LdStrReg #(
     input clr, clk, load,
     output reg [n-1:0] out);
 
-    always @(posedge clk) begin
+    always @(negedge clk) begin
         // Active-low clr, has highest priority
         if(clr == 0) out <= 0;
 

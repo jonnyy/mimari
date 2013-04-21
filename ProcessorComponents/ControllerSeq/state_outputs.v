@@ -1,4 +1,4 @@
-// Generated on 2013-04-21 00:15:12 -0400
+// Generated on 2013-04-21 15:20:53 -0400
 reset: begin
     ACCld = 1'b0;
     ACCclr = 1'b0;
@@ -102,6 +102,40 @@ fetch0: begin
     outDataReady = 1'b0;
 end
 fetch1: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b00;
+    SPctrl = 2'b00;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+fetch2: begin
     ACCld = 1'b0;
     ACCclr = 1'b1;
     ACCin = 2'b00;

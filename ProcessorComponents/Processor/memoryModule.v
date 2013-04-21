@@ -28,14 +28,16 @@ module memoryModule #(
 	input [ramWidth-1:0] dataIn,
 	output [ramWidth-1:0] dataOut,
 	output dataReady,
-	output [18:0] tmpCacheState,
-	output [7:0] tmpCacheAddr
+	output [18:0] tmpCacheState, //TEMP
+	output [7:0] tmpCacheAddr, //TEMP
+	output [7:0] addrInRAMTEMP, //TEMP
+	output [1:0] cacheCntrlTEMP //TEMP
 	//output [18:0] TEMPstateTEMP,
 	//output [1:0] hitCleanTEMP,
 	//wire [addrSize-1:0] wCacheAddr
     );
 	wire [ramWidth-1:0] wDataRAM;
-	wire [addrSize-1:0] wAddrRAM,  wAddr;
+	wire [addrSize-1:0] wAddrRAM, wCacheToRAMaddr,  wAddr;
 	wire [ramWidth-1:0] wRAMOut;
 	wire [ramWidth-1:0] wCacheDataIn;
 	wire [ramWidth-1:0] wLockedDataIn;
@@ -45,8 +47,11 @@ module memoryModule #(
 	wire wWriteEnRAM, wReadEnRAM;
 	wire wDataInSel;
 	wire [addrSize-1:0] wCacheAddr;
+	wire wAddrInSel, wRAMAddrInSel;
 	
 	assign tmpCacheAddr = wCacheAddr;
+	assign addrInRAMTEMP = wAddrRAM;
+	assign cacheCntrlTEMP = wCacheCntrl;
 
 	DMCache #(.blocksize(1), .ramWidth(ramWidth), .addrWidth(addrSize), .lineSize(ramWidth+5), .blockAddrBits(4)) cache(  
 		.cntrl(wCacheCntrl),
@@ -60,14 +65,14 @@ module memoryModule #(
 		.addrOutRAM(wAddrRAM)
 		//.hitCleanTEMP(hitCleanTEMP)
 	);
-					
+	
 	DataRAM #(.width(ramWidth), .length(addrSize)) RAM(
-		.indirect(isIndirect), 
 		.writeEnable(wWriteEnRAM), 
 		.readEnable(wReadEnRAM), 
 		.clr(clrRAM), 
 		.clk(clk), 
-		.addr(wAddrRAM), 
+		.addr(wAddrRAM),
+		.readAddr(wCacheAddr),
 		.writeData(wDataRAM), 
 		.dataReady(wRAMDataReady), 
 		.readData(wRAMOut)
@@ -105,5 +110,4 @@ module memoryModule #(
 		.inputVal({dataOut[addrSize-1:0], addr}),
 		.y(wAddr)
 	);
-
 endmodule
