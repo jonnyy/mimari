@@ -35,7 +35,7 @@ module runProcessor;
 	wire [7:0] out;
 	wire outDataReady;
 	wire inACK;
-	wire [43:0] currState; //TEMP
+	wire [46:0] currState; //TEMP
 	wire [7:0] tmpACCout; //TEMP
 	wire [5:0] tmpIRout; //TEMP
 	wire [7:0] tmpPCout; //TEMP
@@ -44,8 +44,8 @@ module runProcessor;
 	wire [7:0] tmpSPout; //TEMP
 	wire tmpDataReady; //TEMP
 	wire [15:0] tmpIRAMout; //TEMP
-	wire [18:0] tmpIRAMState; //TEMP
-	wire [7:0] tmpIRAMCacheAddr; //TEMP
+	wire [18:0] tmpIRAMState, DataMemState; //TEMP
+	wire [7:0] tmpIRAMCacheAddr, DRAMCacheAddr; //TEMP
 	wire [7:0] addrInRAMTEMP;  //TEMP
 	wire [1:0] cacheCntrlTEMP; //TEMP
 	wire [1:0] tmpAddrMode; //TEMP
@@ -74,7 +74,9 @@ module runProcessor;
 		.IRAMout(tmpIRAMout),
 		.IRAMctrl(tmpIRAMctrl),
 		.InstMemState(tmpIRAMState),
+		.DataMemState(DataMemState),
 		.IRAMCacheAddr(tmpIRAMCacheAddr),
+		.DRAMCacheAddr(DRAMCacheAddr),
 		.cacheCntrlTEMP(cacheCntrlTEMP)
 	);
 

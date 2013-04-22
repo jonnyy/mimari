@@ -40,23 +40,35 @@ module DataRAM #(
 			end
 		end
 		else begin
-			regArray[0]  = 16'b0010100000001100; //LD #12
-			regArray[1]  = 16'b0010111000001000; //ST 8
-			regArray[2]  = 16'b0010100000000011; //LD #3
-			regArray[3]  = 16'b0000000000000011; //ADD #3
-			regArray[4]  = 16'b0010111000000101; //ST 5
-			regArray[5]  = 16'b0010100000001000; //LD #8
-			regArray[6]  = 16'b0010111000000110; //ST 6
-			regArray[7]  = 16'b0010101000000101; //LD 5
-			regArray[8]  = 16'b0000010000000001; //SUB #1
-			regArray[9]  = 16'b0001111000001000; //brz 8
-			regArray[10] = 16'b0010001000000110; //jmp 6
-			regArray[11] = 16'b0010100000001101; //LD #13
-			regArray[12] = 16'b0000000000000011; //ADD #3
-			regArray[13] = 16'b0010111000000101; //Store to address 0
-			regArray[14] = 16'b0000000000000000; //ADD #0
-			regArray[15] = 16'b0010001000000110; //jmp
-			for(i=16; i<2**length; i=i+1) begin
+			//regArray[0]  = 16'b0010100000001100; //LD #12
+			//regArray[1]  = 16'b0010111000001000; //ST 8
+			//regArray[2]  = 16'b0010100000000011; //LD #3
+			//regArray[3]  = 16'b0000000000000011; //ADD #3
+			//regArray[4]  = 16'b0010111000000101; //ST 5
+			//regArray[5]  = 16'b0010100000001000; //LD #8
+			//regArray[6]  = 16'b0010111000000110; //ST 6
+			//regArray[7]  = 16'b0010101000000101; //LD 5
+			//regArray[8]  = 16'b0000010000000001; //SUB #1
+			//regArray[9]  = 16'b0001110000001100; //brz #12
+			//regArray[10] = 16'b0010001000000110; //jmp 6
+			//regArray[11] = 16'b0010100000001101; //LD #13
+			//regArray[12] = 16'b0000000000000011; //ADD #3
+			//regArray[13] = 16'b0010111000000101; //Store to address 0
+			//regArray[14] = 16'b0010000000001110; //jmp #14
+			regArray[0]  = 16'b0010100000001100;
+			regArray[1]  = 16'b0010111000001000;
+			regArray[2]  = 16'b0011111000001000;
+			regArray[3]  = 16'b0010100000001100;
+			regArray[4]  = 16'b0000000000000011;
+			regArray[5]  = 16'b0000000000000011;
+			regArray[6]  = 16'b0000000000000011;
+			regArray[7]  = 16'b0000000000000011;
+			regArray[8]  = 16'b0000010000011000;
+			regArray[9]  = 16'b0001111000001011;
+			regArray[10] = 16'b0010011000000000;
+			regArray[11] = 16'b0010001000001011;
+
+			for(i=15; i<2**length; i=i+1) begin
 				for(j=0; j<width; j=j+1) begin
 					regArray[i][j] = 1'b1; 
 				end

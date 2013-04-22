@@ -19,7 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module HVPISys #(
-    parameter pcWidth = 16,
+    parameter pcWidth = 8,
     parameter addrLen = 2) (
     input clrPend,                  // Clear the DFF storing whether there's a pending interrupt
     input intDisable,               // Disable any interrupts
@@ -38,21 +38,19 @@ module HVPISys #(
 	wire [2**addrLen-1:0] wIntRegOut, wMaskOut, wAndOut;
 	wire [addrLen-1:0] wIntAddr;
 	wire wIsPend, wIntPending;
-	LD_ST_Reg intReg(
-		.slIn(ints),
-		.LD_ST(ldIntReg),
-		.slOut(wIntRegOut), //a Wire here
-		.set(1'b1),
+	LdStrReg #(.n(4)) intReg(
+		.in(ints),
+		.load(ldIntReg),
+		.out(wIntRegOut), //a Wire here
 		.clr(clrIntReg),
 		.clk(clk)
 	);
 		
 		
-	LD_ST_Reg maskReg(
-		.slIn(intMask),
-		.LD_ST(ldMask),
-		.slOut(wMaskOut), //a Wire here
-		.set(1'b1),
+	LdStrReg #(.n(4)) maskReg(
+		.in(intMask),
+		.load(ldMask),
+		.out(wMaskOut), //a Wire here
 		.clr(clrMask),
 		.clk(clk)
 	);
@@ -75,11 +73,11 @@ module HVPISys #(
 	
 	assign priEncOut = {wIntAddr,wIsPend};
 	
-	regArray intAddrRAM(
+	regArray #(.n(8), .m(2)) intAddrRAM(
 		.dataOut(isrAddr),
 		.writeEnable(1'b0),
 		.clr(1'b1), // we DO NOT want to clear these addresses 
-		.dataIn(16'bZZZZZZZZZZZZZZZZ),
+		.dataIn(8'bZZZZZZZZ),
 		.readAddr(wIntAddr),
 		.writeAddr(wIntAddr), // NEVER used
 		.clk(clk)

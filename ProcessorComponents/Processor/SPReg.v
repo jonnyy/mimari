@@ -23,8 +23,12 @@ module SPReg #(
     input clk,
     input [1:0] ctrl,
     output reg [n-1:0] out);
+	
+	initial begin
+		out = 0;
+	end
 
-    always @(posedge clk) begin
+    always @(negedge clk) begin
         case(ctrl)
            2'b00: out <= out;     	// Store
            2'b01: out <= 0;       	// Clear

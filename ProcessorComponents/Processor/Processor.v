@@ -29,7 +29,7 @@ module Processor #(
 	input clk, reset, inDataReady, outACK,
 	output [DRamWidth-1:0] out,
 	output outDataReady, inACK,
-	output [43:0] currState, //TEMP
+	output [46:0] currState, //TEMP
 	output [5:0] IRout, // TEMP
 	output [1:0] addrMode, // TEMP
 	output [7:0] PCout, ACCout, MARout, SPout, //TEMP

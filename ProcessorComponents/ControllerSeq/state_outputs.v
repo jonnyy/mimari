@@ -1,4 +1,4 @@
-// Generated on 2013-04-21 15:20:53 -0400
+// Generated on 2013-04-21 22:09:16 -0400
 reset: begin
     ACCld = 1'b0;
     ACCclr = 1'b0;
@@ -556,7 +556,7 @@ aluImmed: begin
     MARld = 1'b0;
     MARclr = 1'b1;
     MARin = 1'b0;
-    CCld = 1'b0;
+    CCld = 1'b1;
     CCclr = 1'b1;
     CCin = 1'b1;
     writeSrc = 3'b000;
@@ -624,7 +624,7 @@ alu2: begin
     MARld = 1'b0;
     MARclr = 1'b1;
     MARin = 1'b0;
-    CCld = 1'b0;
+    CCld = 1'b1;
     CCclr = 1'b1;
     CCin = 1'b1;
     writeSrc = 3'b000;
@@ -866,9 +866,43 @@ branch0: begin
     CCclr = 1'b1;
     CCin = 1'b0;
     writeSrc = 3'b000;
-    indirect = ir[0];
+    indirect = 1'b0;
     addrSrc = 1'b0;
-    dataCacheCtrl = 2'b10;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+branchImmed: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b10;
+    PCctrl = 2'b01;
+    SPctrl = 2'b00;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
     ldMask = 1'b0;
     clrMask = 1'b1;
     ldIntReg = 1'b0;
@@ -900,9 +934,9 @@ branch1: begin
     CCclr = 1'b1;
     CCin = 1'b0;
     writeSrc = 3'b000;
-    indirect = 1'b0;
+    indirect = ir[0];
     addrSrc = 1'b0;
-    dataCacheCtrl = 2'b01;
+    dataCacheCtrl = 2'b10;
     ldMask = 1'b0;
     clrMask = 1'b1;
     ldIntReg = 1'b0;
@@ -968,6 +1002,74 @@ jump0: begin
     CCclr = 1'b1;
     CCin = 1'b0;
     writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+jumpImmed: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b10;
+    PCctrl = 2'b01;
+    SPctrl = 2'b00;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+jump1: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b00;
+    SPctrl = 2'b00;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
     indirect = ir[0];
     addrSrc = 1'b0;
     dataCacheCtrl = 2'b10;
@@ -985,7 +1087,7 @@ jump0: begin
     devACK = 1'b0;
     outDataReady = 1'b0;
 end
-jump1: begin
+jump2: begin
     ACCld = 1'b0;
     ACCclr = 1'b1;
     ACCin = 2'b00;
@@ -1233,9 +1335,9 @@ ret0: begin
     IRld = 1'b0;
     IRclr = 1'b1;
     IRin = 1'b0;
-    MARld = 1'b1;
+    MARld = 1'b0;
     MARclr = 1'b1;
-    MARin = 1'b1;
+    MARin = 1'b0;
     CCld = 1'b0;
     CCclr = 1'b1;
     CCin = 1'b0;
@@ -1267,9 +1369,9 @@ ret1: begin
     IRld = 1'b0;
     IRclr = 1'b1;
     IRin = 1'b0;
-    MARld = 1'b0;
+    MARld = 1'b1;
     MARclr = 1'b1;
-    MARin = 1'b0;
+    MARin = 1'b1;
     CCld = 1'b0;
     CCclr = 1'b1;
     CCin = 1'b0;
@@ -1298,15 +1400,15 @@ ret2: begin
     PCin = 2'b00;
     PCctrl = 2'b00;
     SPctrl = 2'b00;
-    IRld = 1'b1;
+    IRld = 1'b0;
     IRclr = 1'b1;
     IRin = 1'b0;
     MARld = 1'b0;
     MARclr = 1'b1;
     MARin = 1'b0;
-    CCld = 1'b1;
+    CCld = 1'b0;
     CCclr = 1'b1;
-    CCin = 1'b1;
+    CCin = 1'b0;
     writeSrc = 3'b000;
     indirect = 1'b0;
     addrSrc = 1'b1;
@@ -1332,15 +1434,15 @@ ret3: begin
     PCin = 2'b00;
     PCctrl = 2'b00;
     SPctrl = 2'b11;
-    IRld = 1'b0;
+    IRld = 1'b1;
     IRclr = 1'b1;
     IRin = 1'b0;
     MARld = 1'b0;
     MARclr = 1'b1;
     MARin = 1'b0;
-    CCld = 1'b0;
+    CCld = 1'b1;
     CCclr = 1'b1;
-    CCin = 1'b0;
+    CCin = 1'b1;
     writeSrc = 3'b000;
     indirect = 1'b0;
     addrSrc = 1'b0;
@@ -1364,7 +1466,7 @@ ret4: begin
     ACCclr = 1'b1;
     ACCin = 2'b00;
     PCin = 2'b00;
-    PCctrl = 2'b01;
+    PCctrl = 2'b00;
     SPctrl = 2'b00;
     IRld = 1'b0;
     IRclr = 1'b1;
@@ -1398,7 +1500,7 @@ ret5: begin
     ACCclr = 1'b1;
     ACCin = 2'b00;
     PCin = 2'b00;
-    PCctrl = 2'b00;
+    PCctrl = 2'b01;
     SPctrl = 2'b11;
     IRld = 1'b0;
     IRclr = 1'b1;
@@ -1462,9 +1564,9 @@ ret6: begin
     outDataReady = 1'b0;
 end
 ret7: begin
-    ACCld = 1'b0;
+    ACCld = 1'b1;
     ACCclr = 1'b1;
-    ACCin = 2'b00;
+    ACCin = 2'b01;
     PCin = 2'b00;
     PCctrl = 2'b00;
     SPctrl = 2'b11;
