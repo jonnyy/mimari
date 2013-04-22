@@ -134,16 +134,16 @@ inst_count = options[:starting_addr]
 labels = Hash.new
 instructions = Array.new
 File.readlines(options[:input_file]).each do |line|
+    if inst_count > 255
+        STDERR.puts "ERROR: instructions list extends beyond address 255"
+        exit
+    end
     line = line.split
     if line.length == 3
         labels[line.first.downcase.chop] = inst_count
     end
     instructions << line
     inst_count += 1
-    if inst_count > 255
-        STDERR.puts "ERROR: instructions list extends beyond address 255"
-        exit
-    end
 end
 
 # Initialize instructions objects so they know what address to start at and
