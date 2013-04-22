@@ -26,66 +26,75 @@ output reg ACCld, ACCclr, IRld, IRclr, IRin, MARin, MARclr, MARld, CCld, CCclr,
 	   clrPend, DRAMclr, IRAMclr, devACK, outDataReady, ALUsrc,
 output reg [1:0] ACCin, PCctrl, SPctrl, dataCacheCtrl, instCacheCtrl, PCin,
 output reg [2:0] writeSrc, ALUctrl,
-output reg [46:0] currState //TEMP
+output reg [51:0] currState //TEMP
 );
 
-reg [46:0] /*currState,*/ nextState;
+reg [51:0] /*currState,*/ nextState;
 parameter
-    reset = 47'h400000000000,
-    intCheck = 47'h200000000000,
-    fetch0 = 47'h100000000000,
-    fetch1 = 47'h080000000000,
-    fetch2 = 47'h040000000000,
-    sub0 = 47'h020000000000,
-    sub1 = 47'h010000000000,
-    sub2 = 47'h008000000000,
-    sub3 = 47'h004000000000,
-    sub4 = 47'h002000000000,
-    sub5 = 47'h001000000000,
-    sub6 = 47'h000800000000,
-    sub7 = 47'h000400000000,
-    sub8 = 47'h000200000000,
-    isr = 47'h000100000000,
-    alu0 = 47'h000080000000,
-    aluImmed = 47'h000040000000,
-    alu1 = 47'h000020000000,
-    alu2 = 47'h000010000000,
-    load0 = 47'h000008000000,
-    loadImmed = 47'h000004000000,
-    load1 = 47'h000002000000,
-    load2 = 47'h000001000000,
-    store0 = 47'h000000800000,
-    lmask = 47'h000000400000,
-    branch0 = 47'h000000200000,
-    branchImmed = 47'h000000100000,
-    branch1 = 47'h000000080000,
-    branch2 = 47'h000000040000,
-    jump0 = 47'h000000020000,
-    jumpImmed = 47'h000000010000,
-    jump1 = 47'h000000008000,
-    jump2 = 47'h000000004000,
-    in0 = 47'h000000002000,
-    in1 = 47'h000000001000,
-    in2 = 47'h000000000800,
-    out0 = 47'h000000000400,
-    out1 = 47'h000000000200,
-    out2 = 47'h000000000100,
-    ret0 = 47'h000000000080,
-    ret1 = 47'h000000000040,
-    ret2 = 47'h000000000020,
-    ret3 = 47'h000000000010,
-    ret4 = 47'h000000000008,
-    ret5 = 47'h000000000004,
-    ret6 = 47'h000000000002,
-    ret7 = 47'h000000000001;
+    reset = 52'h8000000000000,
+    intLoad = 52'h4000000000000,
+    intCheck = 52'h2000000000000,
+    fetch0 = 52'h1000000000000,
+    fetch1 = 52'h0800000000000,
+    fetch2 = 52'h0400000000000,
+    sub0 = 52'h0200000000000,
+    sub1 = 52'h0100000000000,
+    sub2 = 52'h0080000000000,
+    sub3 = 52'h0040000000000,
+    sub4 = 52'h0020000000000,
+    sub5 = 52'h0010000000000,
+    sub6 = 52'h0008000000000,
+    sub7 = 52'h0004000000000,
+    sub8 = 52'h0002000000000,
+    isr = 52'h0001000000000,
+    alu0 = 52'h0000800000000,
+    aluImmed = 52'h0000400000000,
+    alu1 = 52'h0000200000000,
+    alu2 = 52'h0000100000000,
+    load0 = 52'h0000080000000,
+    loadImmed = 52'h0000040000000,
+    load1 = 52'h0000020000000,
+    load2 = 52'h0000010000000,
+    store0 = 52'h0000008000000,
+    lmask = 52'h0000004000000,
+    branch0 = 52'h0000002000000,
+    branchImmed = 52'h0000001000000,
+    branch1 = 52'h0000000800000,
+    branch2 = 52'h0000000400000,
+    jump0 = 52'h0000000200000,
+    jumpImmed = 52'h0000000100000,
+    jump1 = 52'h0000000080000,
+    jump2 = 52'h0000000040000,
+    in0 = 52'h0000000020000,
+    in1 = 52'h0000000010000,
+    in2 = 52'h0000000008000,
+    out0 = 52'h0000000004000,
+    out1 = 52'h0000000002000,
+    out2 = 52'h0000000001000,
+    ret0 = 52'h0000000000800,
+    ret1 = 52'h0000000000400,
+    ret2 = 52'h0000000000200,
+    ret3 = 52'h0000000000100,
+    ret4 = 52'h0000000000080,
+    ret5 = 52'h0000000000040,
+    ret6 = 52'h0000000000020,
+    ret7 = 52'h0000000000010,
+    ret8 = 52'h0000000000008,
+    ret9 = 52'h0000000000004,
+    ret10 = 52'h0000000000002,
+    ret11 = 52'h0000000000001;
+
+
  
 	initial begin currState = reset; end
 	
 always @(ir, intPending, dataReady, instReady, currState, inDataReady, Z, outDataSent) begin
 	case(currState)
 		// Starting state - reset all the things
-		reset: nextState = intCheck;
+		reset: nextState = intLoad;
 
+		// Load interrupt register
+		intLoad: nextState = intCheck;
 
 		// Check for interrupts
 		intCheck:
@@ -116,7 +125,7 @@ always @(ir, intPending, dataReady, instReady, currState, inDataReady, Z, outDat
 				4'b1101: nextState = out0;         //X
 				4'b1110: nextState = lmask;        //X
 				4'b1111: nextState = sub0;         //X
-				default: nextState = intCheck;     //X
+				default: nextState = intLoad;     //X
 			endcase
 				
 
@@ -139,9 +148,9 @@ always @(ir, intPending, dataReady, instReady, currState, inDataReady, Z, outDat
 			else if(intPending == 1)  nextState = isr;
 			else nextState = sub8;
 		sub8:
-			nextState = intCheck;
+			nextState = intLoad;
 			//if(dataReady === 0) nextState = sub8;
-			//else nextState = intCheck;
+			//else nextState = intLoad;
 
 
 		// Move HVPIaddr to PC
@@ -152,57 +161,57 @@ always @(ir, intPending, dataReady, instReady, currState, inDataReady, Z, outDat
 		alu0:
 			if(ir[1:0] == 2'b00) nextState = aluImmed;
 			else nextState = alu1;
-		aluImmed: nextState = intCheck;
+		aluImmed: nextState = intLoad;
 		alu1:
 			if(dataReady == 0) nextState = alu1;
 			else nextState = alu2;
-		alu2: nextState = intCheck;
+		alu2: nextState = intLoad;
 
 
 		// Load
 		load0:
 			if(ir[1:0] == 2'b00) nextState = loadImmed;
 			else nextState = load1;
-		loadImmed: nextState = intCheck;
+		loadImmed: nextState = intLoad;
 		load1:
 			if(dataReady == 0) nextState = load1;
 			else nextState = load2;
-		load2: nextState = intCheck;
+		load2: nextState = intLoad;
 
 
 		// Store
 		store0:
 			if(dataReady == 0) nextState = store0;
-			else nextState = intCheck;
+			else nextState = intLoad;
 		
 
 		// Load mask register
-		lmask: nextState = intCheck;
+		lmask: nextState = intLoad;
 
 
 		// Branch
 
 		branch0:
-			if(Z == 0) nextState = intCheck;
+			if(Z == 0) nextState = intLoad;
 			else begin
 				if(ir[1:0] == 2'b00) nextState = branchImmed;
 				else nextState = branch1;		
 			end
-		branchImmed: nextState = intCheck;
+		branchImmed: nextState = intLoad;
 		branch1:
 			if(dataReady == 0) nextState = branch1;
 			else nextState = branch2;
-		branch2: nextState = intCheck;
+		branch2: nextState = intLoad;
 
 
 		// Jump
 		jump0:if(ir[1:0] == 2'b00) nextState = jumpImmed;
 			else nextState = jump1;	
-		jumpImmed: nextState = intCheck;
+		jumpImmed: nextState = intLoad;
 		jump1:
 			if(dataReady == 0) nextState = jump1;
 			else nextState = jump2;
-		jump2: nextState = intCheck;
+		jump2: nextState = intLoad;
 
 
 		// In
@@ -210,7 +219,7 @@ always @(ir, intPending, dataReady, instReady, currState, inDataReady, Z, outDat
 			if(inDataReady == 0) nextState = in0;
 			else nextState = in1;
 		in1: nextState = in2;
-		in2: nextState = intCheck;
+		in2: nextState = intLoad;
 
 
 		// Out
@@ -218,7 +227,7 @@ always @(ir, intPending, dataReady, instReady, currState, inDataReady, Z, outDat
 		out1: nextState = out2;
 		out2:
 			if(outDataSent == 0) nextState = out2;
-			else nextState = intCheck;
+			else nextState = intLoad;
 
 
 		// Return
@@ -226,18 +235,22 @@ always @(ir, intPending, dataReady, instReady, currState, inDataReady, Z, outDat
 			if(dataReady == 0) nextState = ret0;
 			else nextState = ret1;
 		ret1: nextState = ret2;
-		ret2: 
-			if(dataReady == 0) nextState = ret2;
-			else nextState = ret3;
-		ret3: nextState = ret4;
-		ret4: 
-			if(dataReady == 0) nextState = ret4;
-			else nextState = ret5;
+		ret2: nextState = ret3;
+		ret3:
+			if(dataReady == 0) nextState = ret3;
+			else nextState = ret4;
+		ret4: nextState = ret5;
 		ret5: nextState = ret6;
-		ret6:
+		ret6: 
 			if(dataReady == 0) nextState = ret6;
 			else nextState = ret7;
-		ret7: nextState = intCheck;
+		ret7: nextState = ret8;
+		ret8: nextState = ret9;
+		ret9:
+			if(dataReady == 0) nextState = ret9;
+			else nextState = ret10;
+		ret10: nextState = ret11;
+		ret11: nextState = intLoad;
 		default: nextState = reset;
 	endcase
 end
@@ -249,7 +262,7 @@ end
 
 always @(currState, ir) begin
 	case(currState)
-		// Generated on 2013-04-21 22:09:16 -0400
+// Generated on 2013-04-22 01:34:21 -0400
 reset: begin
     ACCld = 1'b0;
     ACCclr = 1'b0;
@@ -284,7 +297,7 @@ reset: begin
     devACK = 1'b0;
     outDataReady = 1'b0;
 end
-intCheck: begin
+intLoad: begin
     ACCld = 1'b0;
     ACCclr = 1'b1;
     ACCin = 2'b00;
@@ -318,6 +331,40 @@ intCheck: begin
     devACK = 1'b0;
     outDataReady = 1'b0;
 end
+intCheck: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b00;
+    SPctrl = 2'b00;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
 fetch0: begin
     ACCld = 1'b0;
     ACCclr = 1'b1;
@@ -337,7 +384,7 @@ fetch0: begin
     writeSrc = 3'b000;
     indirect = 1'b0;
     addrSrc = 1'b0;
-    dataCacheCtrl = 2'b10;
+    dataCacheCtrl = 2'b01;
     ldMask = 1'b0;
     clrMask = 1'b1;
     ldIntReg = 1'b0;
@@ -444,7 +491,7 @@ sub0: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -478,7 +525,7 @@ sub1: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -512,7 +559,7 @@ sub2: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -546,7 +593,7 @@ sub3: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -580,7 +627,7 @@ sub4: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -614,7 +661,7 @@ sub5: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -648,7 +695,7 @@ sub6: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -674,7 +721,7 @@ sub7: begin
     CCld = 1'b0;
     CCclr = 1'b1;
     CCin = 1'b0;
-    writeSrc = 3'b011;
+    writeSrc = 3'b100;
     indirect = 1'b0;
     addrSrc = 1'b1;
     dataCacheCtrl = 2'b11;
@@ -682,7 +729,7 @@ sub7: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -716,7 +763,7 @@ sub8: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -740,7 +787,7 @@ isr: begin
     MARclr = 1'b1;
     MARin = 1'b0;
     CCld = 1'b0;
-    CCclr = 1'b1;
+    CCclr = 1'b0;
     CCin = 1'b0;
     writeSrc = 3'b000;
     indirect = 1'b0;
@@ -1600,7 +1647,7 @@ ret0: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1616,7 +1663,7 @@ ret1: begin
     ACCin = 2'b00;
     PCin = 2'b00;
     PCctrl = 2'b00;
-    SPctrl = 2'b11;
+    SPctrl = 2'b00;
     IRld = 1'b0;
     IRclr = 1'b1;
     IRin = 1'b0;
@@ -1634,7 +1681,7 @@ ret1: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1645,6 +1692,40 @@ ret1: begin
     outDataReady = 1'b0;
 end
 ret2: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b00;
+    SPctrl = 2'b11;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+ret3: begin
     ACCld = 1'b0;
     ACCclr = 1'b1;
     ACCin = 2'b00;
@@ -1668,41 +1749,7 @@ ret2: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
-    clrPend = 1'b1;
-    ALUctrl = ir[4:2];
-    ALUsrc = 1'b0;
-    DRAMclr = 1'b1;
-    IRAMclr = 1'b1;
-    instCacheCtrl = 2'b01;
-    devACK = 1'b0;
-    outDataReady = 1'b0;
-end
-ret3: begin
-    ACCld = 1'b0;
-    ACCclr = 1'b1;
-    ACCin = 2'b00;
-    PCin = 2'b00;
-    PCctrl = 2'b00;
-    SPctrl = 2'b11;
-    IRld = 1'b1;
-    IRclr = 1'b1;
-    IRin = 1'b0;
-    MARld = 1'b0;
-    MARclr = 1'b1;
-    MARin = 1'b0;
-    CCld = 1'b1;
-    CCclr = 1'b1;
-    CCin = 1'b1;
-    writeSrc = 3'b000;
-    indirect = 1'b0;
-    addrSrc = 1'b0;
-    dataCacheCtrl = 2'b00;
-    ldMask = 1'b0;
-    clrMask = 1'b1;
-    ldIntReg = 1'b0;
-    clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1719,24 +1766,24 @@ ret4: begin
     PCin = 2'b00;
     PCctrl = 2'b00;
     SPctrl = 2'b00;
-    IRld = 1'b0;
+    IRld = 1'b1;
     IRclr = 1'b1;
     IRin = 1'b0;
     MARld = 1'b0;
     MARclr = 1'b1;
     MARin = 1'b0;
-    CCld = 1'b0;
+    CCld = 1'b1;
     CCclr = 1'b1;
-    CCin = 1'b0;
+    CCin = 1'b1;
     writeSrc = 3'b000;
     indirect = 1'b0;
-    addrSrc = 1'b1;
-    dataCacheCtrl = 2'b10;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
     ldMask = 1'b0;
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1751,7 +1798,7 @@ ret5: begin
     ACCclr = 1'b1;
     ACCin = 2'b00;
     PCin = 2'b00;
-    PCctrl = 2'b01;
+    PCctrl = 2'b00;
     SPctrl = 2'b11;
     IRld = 1'b0;
     IRclr = 1'b1;
@@ -1765,12 +1812,12 @@ ret5: begin
     writeSrc = 3'b000;
     indirect = 1'b0;
     addrSrc = 1'b0;
-    dataCacheCtrl = 2'b00;
+    dataCacheCtrl = 2'b01;
     ldMask = 1'b0;
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1781,9 +1828,9 @@ ret5: begin
     outDataReady = 1'b0;
 end
 ret6: begin
-    ACCld = 1'b1;
+    ACCld = 1'b0;
     ACCclr = 1'b1;
-    ACCin = 2'b01;
+    ACCin = 2'b00;
     PCin = 2'b00;
     PCctrl = 2'b00;
     SPctrl = 2'b00;
@@ -1804,7 +1851,7 @@ ret6: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1815,9 +1862,43 @@ ret6: begin
     outDataReady = 1'b0;
 end
 ret7: begin
-    ACCld = 1'b1;
+    ACCld = 1'b0;
     ACCclr = 1'b1;
-    ACCin = 2'b01;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b01;
+    SPctrl = 2'b00;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+ret8: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
     PCin = 2'b00;
     PCctrl = 2'b00;
     SPctrl = 2'b11;
@@ -1833,12 +1914,114 @@ ret7: begin
     writeSrc = 3'b000;
     indirect = 1'b0;
     addrSrc = 1'b0;
-    dataCacheCtrl = 2'b00;
+    dataCacheCtrl = 2'b01;
     ldMask = 1'b0;
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+ret9: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b00;
+    SPctrl = 2'b00;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b1;
+    dataCacheCtrl = 2'b10;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+ret10: begin
+    ACCld = 1'b1;
+    ACCclr = 1'b1;
+    ACCin = 2'b01;
+    PCin = 2'b00;
+    PCctrl = 2'b00;
+    SPctrl = 2'b00;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+ret11: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b00;
+    SPctrl = 2'b11;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1867,7 +2050,7 @@ default: begin
     writeSrc = 3'b000;
     indirect = 1'b0;
     addrSrc = 1'b0;
-    dataCacheCtrl = 2'b00;
+    dataCacheCtrl = 2'b01;
     ldMask = 1'b0;
     clrMask = 1'b1;
     ldIntReg = 1'b0;
@@ -1882,6 +2065,7 @@ default: begin
     devACK = 1'b0;
     outDataReady = 1'b0;
 end
+
 
     endcase
 end

@@ -1,4 +1,4 @@
-// Generated on 2013-04-21 22:09:16 -0400
+// Generated on 2013-04-22 01:34:21 -0400
 reset: begin
     ACCld = 1'b0;
     ACCclr = 1'b0;
@@ -33,7 +33,7 @@ reset: begin
     devACK = 1'b0;
     outDataReady = 1'b0;
 end
-intCheck: begin
+intLoad: begin
     ACCld = 1'b0;
     ACCclr = 1'b1;
     ACCin = 2'b00;
@@ -56,6 +56,40 @@ intCheck: begin
     ldMask = 1'b0;
     clrMask = 1'b1;
     ldIntReg = 1'b1;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+intCheck: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b00;
+    SPctrl = 2'b00;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
     clrIntReg = 1'b1;
     intDisable = 1'b0;
     clrPend = 1'b1;
@@ -193,7 +227,7 @@ sub0: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -227,7 +261,7 @@ sub1: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -261,7 +295,7 @@ sub2: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -295,7 +329,7 @@ sub3: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -329,7 +363,7 @@ sub4: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -363,7 +397,7 @@ sub5: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -397,7 +431,7 @@ sub6: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -423,7 +457,7 @@ sub7: begin
     CCld = 1'b0;
     CCclr = 1'b1;
     CCin = 1'b0;
-    writeSrc = 3'b011;
+    writeSrc = 3'b100;
     indirect = 1'b0;
     addrSrc = 1'b1;
     dataCacheCtrl = 2'b11;
@@ -431,7 +465,7 @@ sub7: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -465,7 +499,7 @@ sub8: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1349,7 +1383,7 @@ ret0: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1365,7 +1399,7 @@ ret1: begin
     ACCin = 2'b00;
     PCin = 2'b00;
     PCctrl = 2'b00;
-    SPctrl = 2'b11;
+    SPctrl = 2'b00;
     IRld = 1'b0;
     IRclr = 1'b1;
     IRin = 1'b0;
@@ -1383,7 +1417,7 @@ ret1: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1394,6 +1428,40 @@ ret1: begin
     outDataReady = 1'b0;
 end
 ret2: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b00;
+    SPctrl = 2'b11;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+ret3: begin
     ACCld = 1'b0;
     ACCclr = 1'b1;
     ACCin = 2'b00;
@@ -1417,41 +1485,7 @@ ret2: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
-    clrPend = 1'b1;
-    ALUctrl = ir[4:2];
-    ALUsrc = 1'b0;
-    DRAMclr = 1'b1;
-    IRAMclr = 1'b1;
-    instCacheCtrl = 2'b01;
-    devACK = 1'b0;
-    outDataReady = 1'b0;
-end
-ret3: begin
-    ACCld = 1'b0;
-    ACCclr = 1'b1;
-    ACCin = 2'b00;
-    PCin = 2'b00;
-    PCctrl = 2'b00;
-    SPctrl = 2'b11;
-    IRld = 1'b1;
-    IRclr = 1'b1;
-    IRin = 1'b0;
-    MARld = 1'b0;
-    MARclr = 1'b1;
-    MARin = 1'b0;
-    CCld = 1'b1;
-    CCclr = 1'b1;
-    CCin = 1'b1;
-    writeSrc = 3'b000;
-    indirect = 1'b0;
-    addrSrc = 1'b0;
-    dataCacheCtrl = 2'b00;
-    ldMask = 1'b0;
-    clrMask = 1'b1;
-    ldIntReg = 1'b0;
-    clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1468,24 +1502,24 @@ ret4: begin
     PCin = 2'b00;
     PCctrl = 2'b00;
     SPctrl = 2'b00;
-    IRld = 1'b0;
+    IRld = 1'b1;
     IRclr = 1'b1;
     IRin = 1'b0;
     MARld = 1'b0;
     MARclr = 1'b1;
     MARin = 1'b0;
-    CCld = 1'b0;
+    CCld = 1'b1;
     CCclr = 1'b1;
-    CCin = 1'b0;
+    CCin = 1'b1;
     writeSrc = 3'b000;
     indirect = 1'b0;
-    addrSrc = 1'b1;
-    dataCacheCtrl = 2'b10;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
     ldMask = 1'b0;
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1500,7 +1534,7 @@ ret5: begin
     ACCclr = 1'b1;
     ACCin = 2'b00;
     PCin = 2'b00;
-    PCctrl = 2'b01;
+    PCctrl = 2'b00;
     SPctrl = 2'b11;
     IRld = 1'b0;
     IRclr = 1'b1;
@@ -1514,12 +1548,12 @@ ret5: begin
     writeSrc = 3'b000;
     indirect = 1'b0;
     addrSrc = 1'b0;
-    dataCacheCtrl = 2'b00;
+    dataCacheCtrl = 2'b01;
     ldMask = 1'b0;
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1530,9 +1564,9 @@ ret5: begin
     outDataReady = 1'b0;
 end
 ret6: begin
-    ACCld = 1'b1;
+    ACCld = 1'b0;
     ACCclr = 1'b1;
-    ACCin = 2'b01;
+    ACCin = 2'b00;
     PCin = 2'b00;
     PCctrl = 2'b00;
     SPctrl = 2'b00;
@@ -1553,7 +1587,7 @@ ret6: begin
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1564,6 +1598,108 @@ ret6: begin
     outDataReady = 1'b0;
 end
 ret7: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b01;
+    SPctrl = 2'b00;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+ret8: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b00;
+    SPctrl = 2'b11;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+ret9: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b00;
+    SPctrl = 2'b00;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b1;
+    dataCacheCtrl = 2'b10;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+ret10: begin
     ACCld = 1'b1;
     ACCclr = 1'b1;
     ACCin = 2'b01;
@@ -1582,12 +1718,46 @@ ret7: begin
     writeSrc = 3'b000;
     indirect = 1'b0;
     addrSrc = 1'b0;
-    dataCacheCtrl = 2'b00;
+    dataCacheCtrl = 2'b01;
     ldMask = 1'b0;
     clrMask = 1'b1;
     ldIntReg = 1'b0;
     clrIntReg = 1'b1;
-    intDisable = 1'b1;
+    intDisable = 1'b0;
+    clrPend = 1'b1;
+    ALUctrl = ir[4:2];
+    ALUsrc = 1'b0;
+    DRAMclr = 1'b1;
+    IRAMclr = 1'b1;
+    instCacheCtrl = 2'b01;
+    devACK = 1'b0;
+    outDataReady = 1'b0;
+end
+ret11: begin
+    ACCld = 1'b0;
+    ACCclr = 1'b1;
+    ACCin = 2'b00;
+    PCin = 2'b00;
+    PCctrl = 2'b00;
+    SPctrl = 2'b11;
+    IRld = 1'b0;
+    IRclr = 1'b1;
+    IRin = 1'b0;
+    MARld = 1'b0;
+    MARclr = 1'b1;
+    MARin = 1'b0;
+    CCld = 1'b0;
+    CCclr = 1'b1;
+    CCin = 1'b0;
+    writeSrc = 3'b000;
+    indirect = 1'b0;
+    addrSrc = 1'b0;
+    dataCacheCtrl = 2'b01;
+    ldMask = 1'b0;
+    clrMask = 1'b1;
+    ldIntReg = 1'b0;
+    clrIntReg = 1'b1;
+    intDisable = 1'b0;
     clrPend = 1'b1;
     ALUctrl = ir[4:2];
     ALUsrc = 1'b0;
@@ -1616,7 +1786,7 @@ default: begin
     writeSrc = 3'b000;
     indirect = 1'b0;
     addrSrc = 1'b0;
-    dataCacheCtrl = 2'b00;
+    dataCacheCtrl = 2'b01;
     ldMask = 1'b0;
     clrMask = 1'b1;
     ldIntReg = 1'b0;

@@ -18,15 +18,15 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module DMCache(cntrl, clk, addr, dataIn, dataOut, isHit, isClean, dataOutRAM, addrOutRAM/*, hitCleanTEMP*/);
+module DMCache(cntrl, clk, addr, dataIn, dataOut, isHit, isClean, dataOutRAM, addrOutRAM, isDirtyWrite/*, hitCleanTEMP*/);
 	parameter blocksize = 1;
 	parameter ramWidth = 8; //These need to be used to set up reg array
 	parameter addrWidth = 8;
-	parameter lineSize = 13; //These need to be used to set up reg array
+	parameter lineSize = 14; //These need to be used to set up reg array
 	parameter blockAddrBits = 4;
 	
 	input [1:0] cntrl;
-	input clk;
+	input clk, isDirtyWrite;
 	input [ramWidth-1:0] dataIn; //Should maybe simplify to only be one thing for address instead of two kinds of addresses???
 	input [addrWidth-1:0] addr;
 	output reg[ramWidth-1:0] dataOut;
@@ -41,36 +41,41 @@ module DMCache(cntrl, clk, addr, dataIn, dataOut, isHit, isClean, dataOutRAM, ad
 	reg [lineSize-1:0] regArray [(2**blockAddrBits)-1:0];
 	
 	initial begin
-		for(i=0; i<2**blockAddrBits; i=i+1)
-			for(j=0; j<lineSize; j=j+1)
-				regArray[i][j] = 1'b1;
+		for(i=0; i<2**blockAddrBits; i=i+1) begin
+			for(j=0; j<lineSize; j=j+1) begin
+				if(j==lineSize-2) regArray[i][j] = 1'b0;
+				else regArray[i][j] = 1'b1;
+			end
+		end
 	end
 		
 
 	always @(negedge(clk)) begin
 		case(cntrl) 
 			2'b00: begin //CLR
-				for(i=0; i<2**blockAddrBits; i=i+1)
-				begin
-					regArray[i] <= 1;
-				end
+			for(i=0; i<2**blockAddrBits; i=i+1) begin
+			for(j=0; j<lineSize; j=j+1) begin
+				if(j==lineSize-2) regArray[i][j] <= 1'b0;
+				else regArray[i][j] <= 1'b1;
+			end
+		end
 			end	
 			2'b01: begin //Check Status
-				if(regArray[addr[blockAddrBits-1:0]][lineSize-2:ramWidth] == addr[addrWidth-1:blockAddrBits]) begin //HIT!!!
+				if((regArray[addr[blockAddrBits-1:0]][lineSize-3:ramWidth] == addr[addrWidth-1:blockAddrBits]) && (regArray[addr[blockAddrBits-1:0]][lineSize-1] != 1'b1) ) begin //HIT!!!
 					isHit <= 1'b1;
 				end
 				else begin // MISS!!!
 					isHit <= 1'b0;
 				end
-				isClean <= ~regArray[addr[blockAddrBits-1:0]][lineSize-1];
-				addrOutRAM <= {regArray[addr[blockAddrBits-1:0]][lineSize-2:ramWidth], addr[blockAddrBits-1:0]};
+				isClean <= ~regArray[addr[blockAddrBits-1:0]][lineSize-2];
+				addrOutRAM <= {regArray[addr[blockAddrBits-1:0]][lineSize-3:ramWidth], addr[blockAddrBits-1:0]};
 				dataOutRAM <= regArray[addr[blockAddrBits-1:0]][ramWidth-1:0];
 			end
 			2'b10: begin //READ
 				dataOut <= regArray[addr[blockAddrBits-1:0]][ramWidth-1:0];
 			end
 			2'b11: begin //WRITE
-				regArray[addr[blockAddrBits-1:0]] <= {1'b1, addr[addrWidth-1:blockAddrBits], dataIn};
+				regArray[addr[blockAddrBits-1:0]] <= {1'b0, isDirtyWrite, addr[addrWidth-1:blockAddrBits], dataIn};
 			end
 		endcase
 		//hitCleanTEMP <= {isHit, isClean};

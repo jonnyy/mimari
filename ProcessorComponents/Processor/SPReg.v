@@ -25,13 +25,13 @@ module SPReg #(
     output reg [n-1:0] out);
 	
 	initial begin
-		out = 0;
+		out = 128;
 	end
 
     always @(negedge clk) begin
         case(ctrl)
            2'b00: out <= out;     	// Store
-           2'b01: out <= 0;       	// Clear
+           2'b01: out <= 128;       	// Clear
            2'b10: out <= out + 8'd1;  // Increment by 1
            2'b11: out <= out - 8'd1;  // Decrement by 1
         endcase

@@ -55,24 +55,53 @@ module DataRAM #(
 			//regArray[12] = 16'b0000000000000011; //ADD #3
 			//regArray[13] = 16'b0010111000000101; //Store to address 0
 			//regArray[14] = 16'b0010000000001110; //jmp #14
-			regArray[0]  = 16'b0010100000001100;
-			regArray[1]  = 16'b0010111000001000;
-			regArray[2]  = 16'b0011111000001000;
-			regArray[3]  = 16'b0010100000001100;
-			regArray[4]  = 16'b0000000000000011;
-			regArray[5]  = 16'b0000000000000011;
-			regArray[6]  = 16'b0000000000000011;
-			regArray[7]  = 16'b0000000000000011;
-			regArray[8]  = 16'b0000010000011000;
-			regArray[9]  = 16'b0001111000001011;
-			regArray[10] = 16'b0010011000000000;
-			regArray[11] = 16'b0010001000001011;
+			
+			regArray[0] = 16'b0011100000001111;
+			regArray[1] = 16'b0010100001111111;
+			regArray[2] = 16'b0000000000000001;
+			regArray[3] = 16'b0010111000000111;
+			regArray[4] = 16'b0010000000000100;
+/*
+				regArray[0] = 16'b0010100001100100;
+				regArray[1] = 16'b0000000000000001;
+				regArray[2] = 16'b0010111000110010;
+				regArray[3] = 16'b0011110000000110;
+				regArray[4] = 16'b0000000000000001;
+				regArray[5] = 16'b0010000000000101;
+				regArray[6] = 16'b0010101000110010;
+				regArray[7] = 16'b0000000000000001;
+				regArray[8] = 16'b0010111000110010;
+				regArray[9] = 16'b0010011000000000;
+*/
 
-			for(i=15; i<2**length; i=i+1) begin
+			for(i=5; i<240; i=i+1) begin
 				for(j=0; j<width; j=j+1) begin
 					regArray[i][j] = 1'b1; 
 				end
 			end
+			// Interrupt 0
+			regArray[240] = 16'b0010100000001010;
+			regArray[241] = 16'b0001101000000000;
+			regArray[242] = 16'b0010111000001010;
+			regArray[243] = 16'b0010010100000000;
+			
+			// Interrupt 1
+			regArray[244] = 16'b0010100001111111;
+			regArray[245] = 16'b0000000000000001;
+			regArray[246] = 16'b0010111000000000;
+			regArray[247] = 16'b0010010100000000;
+
+			// Interrupt 2
+			regArray[248] = 16'b0010100000000101;
+			regArray[249] = 16'b0001101000000000;
+			regArray[250] = 16'b0010111000001111;
+			regArray[251] = 16'b0010010100000000;
+
+			// Interrupt 3
+			regArray[252] = 16'b0011001000000000;
+			regArray[253] = 16'b0000000000000001;
+			regArray[254] = 16'b0010111000011001;
+			regArray[255] = 16'b0010010100000000;
 		end
 	end
     always @(negedge clk) begin

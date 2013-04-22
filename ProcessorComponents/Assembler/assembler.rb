@@ -134,7 +134,11 @@ end.parse!
 inst_count = options[:starting_addr]
 labels = {}
 instructions = []
-options[:input_file].each_line do |line|
+infile = STDIN
+if options[:input_file] != STDIN
+    infile = File.open(options[:input_file], "r")
+end
+infile.each_line do |line|
     if inst_count > 255
         STDERR.puts "ERROR: instructions list extends beyond address 255"
         exit

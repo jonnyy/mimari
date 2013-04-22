@@ -29,11 +29,15 @@ module HVPISys #(
     input ldMask, clrMask,          // Control Mask reg
     input ldIntReg, clrIntReg,      // Control Interrupt reg
     output [pcWidth-1:0] isrAddr,   // Output ISR address
-    output intPending);             // Tells if there's a pending interrupt
+    output intPending,
+	output [3:0] tmpIntReg);             // Tells if there's a pending interrupt
 	
 	wire [2**addrLen-1:0] wIntRegOut, wMaskOut, wAndOut;
 	wire [addrLen-1:0] wIntAddr;
 	wire wIsPend, wIntPending;
+	
+	assign tmpIntReg = wIntRegOut;
+	
 	LdStrReg #(.n(4)) intReg(
 		.in(ints),
 		.load(ldIntReg),

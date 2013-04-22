@@ -30,12 +30,13 @@ module runProcessor;
 	reg reset;
 	reg inDataReady;
 	reg outACK;
+	reg int0, int1;
 
 	// Outputs
 	wire [7:0] out;
 	wire outDataReady;
 	wire inACK;
-	wire [46:0] currState; //TEMP
+	wire [51:0] currState; //TEMP
 	wire [7:0] tmpACCout; //TEMP
 	wire [5:0] tmpIRout; //TEMP
 	wire [7:0] tmpPCout; //TEMP
@@ -50,11 +51,17 @@ module runProcessor;
 	wire [1:0] cacheCntrlTEMP; //TEMP
 	wire [1:0] tmpAddrMode; //TEMP
 	wire [1:0] tmpIRAMctrl; //TEMP
+	wire [3:0] tmpIntReg; //TEMP
+	wire [7:0] tmpIsrAddr; //TEMP
+	wire tmpIntPending; //TEMP
+	wire [7:0] tmpDRAMmuxAddr; //TEMP
 
 
 	// Instantiate the Unit Under Test (UUT)
 	Processor uut (
-		.in(in), 
+		.in(in),
+		.int0(int0),
+		.int1(int1),
 		.clk(clk), 
 		.reset(reset), 
 		.inDataReady(inDataReady), 
@@ -77,16 +84,22 @@ module runProcessor;
 		.DataMemState(DataMemState),
 		.IRAMCacheAddr(tmpIRAMCacheAddr),
 		.DRAMCacheAddr(DRAMCacheAddr),
-		.cacheCntrlTEMP(cacheCntrlTEMP)
+		.cacheCntrlTEMP(cacheCntrlTEMP),
+		.tmpIntReg(tmpIntReg),
+		.tmpIsrAddr(tmpIsrAddr),
+		.tmpIntPending(tmpIntPending),
+		.tmpDRAMmuxAddr(tmpDRAMmuxAddr)
 	);
 
 	initial begin
 		// Initialize Inputs
 		in = 0;
-		clk = 0;
+		clk = 1; // Set at 1 so negedge triggers clr of registers
 		reset = 0;
 		inDataReady = 0;
 		outACK = 0;
+		int0 = 0;
+		int1 = 0;
 
 		// Wait 100 ns for global reset to finish
 		#100;
@@ -98,6 +111,10 @@ module runProcessor;
 	always begin
 		#10 clk = ~clk;
 	end
+	
+	//always begin
+		//#1000 int0 = ~int0;
+	//end
       
 endmodule
 

@@ -26,10 +26,10 @@ module Processor #(
 	parameter IRWidth = 6,
 	parameter ccWidth = 2) (
 	input [DRamWidth-1:0] in,
-	input clk, reset, inDataReady, outACK,
+	input clk, reset, inDataReady, outACK, int0, int1,
 	output [DRamWidth-1:0] out,
 	output outDataReady, inACK,
-	output [46:0] currState, //TEMP
+	output [51:0] currState, //TEMP
 	output [5:0] IRout, // TEMP
 	output [1:0] addrMode, // TEMP
 	output [7:0] PCout, ACCout, MARout, SPout, //TEMP
@@ -39,7 +39,11 @@ module Processor #(
 	output [1:0] IRAMctrl, //TEMP
 	output [18:0] InstMemState, DataMemState, //TEMP
 	output [7:0] IRAMCacheAddr, DRAMCacheAddr, //TEMP
-	output [1:0] cacheCntrlTEMP //TEMP
+	output [1:0] cacheCntrlTEMP, //TEMP
+	output [3:0] tmpIntReg, //TEMP
+	output [7:0] tmpIsrAddr, //TEMP
+	output tmpIntPending, //TEMP
+	output [7:0] tmpDRAMmuxAddr //TEMP
     );
 	
 	// TEMP wires
@@ -102,10 +106,17 @@ module Processor #(
 	assign ACCout = wACCout;
 	assign PCout = wPCout;
 	
+	//HVPI
+	assign tmpIsrAddr = wIsrAddr;
+	assign tmpIntPending = wIntPending;
+	
+	//DRAM
+	assign tmpDRAMmuxAddr = wDaddrIn;
+	
 	assign IRAMDataReady = wIRAMDataReady;
 	assign IRAMout = wIRAMout;
 	assign IRAMctrl = wIMemCtrl;
-
+	
 	ControllerSeq theController(
 		.ir(wIRout),//13:8 {opcode,addrMode}
 		.intPending(wIntPending),
@@ -264,7 +275,7 @@ module Processor #(
 	
 	mux2x1 #(.size(ccWidth)) CCinMux(
 		.sel(wCCsel),
-		.inputVal({{wV, wZ}, wDRAMout[DRamWidth-1:DRamWidth-ccWidth]}), //size *2 input (1 selects MSB input)
+		.inputVal({wDRAMout[DRamWidth-1:DRamWidth-ccWidth],{wV, wZ}}), //size *2 input (1 selects MSB input)
 		.y(wCCDataIn) //output of size
 	);
 	
@@ -293,14 +304,15 @@ module Processor #(
 		.clrPend(wPendclr),         // Clear the DFF storing whether there's a pending interrupt
 		.intDisable(wIntDisable),   // Disable any interrupts
 		.clk(clk),
-		.ints(4'b0000),    				// Interrupt flags 2**addrLen
-		.intMask(wDRAMout[3:0]), 				// Interrupt masks 2**addrLen
+		.ints({inDataReady,int1,int0,wCCout[1]}),    				// Interrupt flags 2**addrLen
+		.intMask(wMARout[3:0]), 				// Interrupt masks 2**addrLen
 		.ldMask(wLdMask),
 		.clrMask(wMaskclr),         // Control Mask reg
 		.ldIntReg(wLdIntReg), 
 		.clrIntReg(wIntRegclr),     // Control Interrupt reg
 		.isrAddr(wIsrAddr),   		// Output ISR address PC width
-		.intPending(wIntPending)
+		.intPending(wIntPending),
+		.tmpIntReg(tmpIntReg)
 	); 
 
 endmodule 

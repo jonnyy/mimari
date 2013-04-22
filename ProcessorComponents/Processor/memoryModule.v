@@ -38,7 +38,7 @@ module memoryModule #(
     );
 	wire [ramWidth-1:0] wDataRAM;
 	wire [addrSize-1:0] wAddrRAM, wCacheToRAMaddr,  wAddr;
-	wire [ramWidth-1:0] wRAMOut;
+	wire [ramWidth-1:0] wRAMOut; 
 	wire [ramWidth-1:0] wCacheDataIn;
 	wire [ramWidth-1:0] wLockedDataIn;
 	wire wRAMDataReady;
@@ -53,7 +53,7 @@ module memoryModule #(
 	assign addrInRAMTEMP = wAddrRAM;
 	assign cacheCntrlTEMP = wCacheCntrl;
 
-	DMCache #(.blocksize(1), .ramWidth(ramWidth), .addrWidth(addrSize), .lineSize(ramWidth+5), .blockAddrBits(4)) cache(  
+	DMCache #(.blocksize(1), .ramWidth(ramWidth), .addrWidth(addrSize), .lineSize(ramWidth+6), .blockAddrBits(4)) cache(  
 		.cntrl(wCacheCntrl),
 		.clk(clk), 
 		.addr(wCacheAddr), 
@@ -62,7 +62,8 @@ module memoryModule #(
 		.isHit(wIsHit), 
 		.isClean(wIsClean), 
 		.dataOutRAM(wDataRAM), 
-		.addrOutRAM(wAddrRAM)
+		.addrOutRAM(wAddrRAM),
+		.isDirtyWrite(~wAddrInSel)
 		//.hitCleanTEMP(hitCleanTEMP)
 	);
 	
@@ -99,7 +100,7 @@ module memoryModule #(
 		.currState(tmpCacheState)
 	);
 								
-	mux2x1 #ramWidth dataInSelector (
+	mux2x1 #(.size(ramWidth)) dataInSelector (
 		.sel(wDataInSel),
 		.inputVal({wLockedDataIn, wRAMOut}),
 		.y(wCacheDataIn)
