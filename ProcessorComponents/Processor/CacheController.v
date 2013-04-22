@@ -149,11 +149,11 @@ module CacheController #(
         currState <= nextState;
     end
 
-    always @(currState, addr) begin
+    always @(currState, addr, ctrl) begin
         case(currState)
             start: begin
                 cacheIn = 2'b10;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;
@@ -161,7 +161,7 @@ module CacheController #(
             end
             clrState: begin
                 cacheIn = 2'b00;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;
@@ -169,7 +169,7 @@ module CacheController #(
             end
             indirectCheck: begin
                 cacheIn = 2'b01;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;
@@ -177,7 +177,7 @@ module CacheController #(
             end
             read: begin
                 cacheIn = 2'b01;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;
@@ -185,7 +185,7 @@ module CacheController #(
             end
             checkReadStatus: begin
                 cacheIn = 2'b10;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;
@@ -193,7 +193,7 @@ module CacheController #(
             end
             r_writeRAM: begin
                 cacheIn = 2'b10;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b1;
 				outputReady = 1'b0;
@@ -201,7 +201,7 @@ module CacheController #(
             end
             r_fetchRAM: begin
                 cacheIn = 2'b10;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b1;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;
@@ -209,7 +209,7 @@ module CacheController #(
             end
             r_cacheWrite: begin
                 cacheIn = 2'b11;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
                 outputReady = 1'b0;
@@ -217,7 +217,7 @@ module CacheController #(
             end
             cacheRead: begin
                 cacheIn = 2'b10;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b1;
@@ -225,7 +225,7 @@ module CacheController #(
             end
             write: begin
                 cacheIn = 2'b01;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;
@@ -233,7 +233,7 @@ module CacheController #(
             end
             checkWriteStatus: begin
                 cacheIn = 2'b10;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;
@@ -241,7 +241,7 @@ module CacheController #(
             end
             w_writeRAM: begin
                 cacheIn = 2'b10;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b1;
 				outputReady = 1'b0;
@@ -249,7 +249,7 @@ module CacheController #(
             end
             cacheWrite: begin
                 cacheIn = 2'b11;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b1;
@@ -257,7 +257,7 @@ module CacheController #(
             end
             indCheckStatus: begin
                 cacheIn = 2'b10;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;
@@ -265,7 +265,7 @@ module CacheController #(
             end
             indWriteRAM: begin
                 cacheIn = 2'b10;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b1;
 				outputReady = 1'b0;
@@ -273,7 +273,7 @@ module CacheController #(
             end
             indReadRAM: begin
                 cacheIn = 2'b10;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b1;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;
@@ -281,7 +281,7 @@ module CacheController #(
             end
             indWriteCache: begin
                 cacheIn = 2'b11;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
                 outputReady = 1'b0;
@@ -289,7 +289,7 @@ module CacheController #(
             end
             indRead: begin
                 cacheIn = 2'b10;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;
@@ -298,7 +298,7 @@ module CacheController #(
             end
 			indirectAddr: begin
 				cacheIn = 2'b01;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;
@@ -306,7 +306,7 @@ module CacheController #(
 			end
             default: begin
                 cacheIn = 2'b10;
-                dataInSel = cacheIn[0];
+                dataInSel = ctrl[0];
                 RAMreadEnable = 1'b0;
                 RAMwriteEnable = 1'b0;
 				outputReady = 1'b0;

@@ -35,14 +35,21 @@ module runProcessor;
 	wire [7:0] out;
 	wire outDataReady;
 	wire inACK;
-	wire [42:0] currState; //TEMP
+	wire [43:0] currState; //TEMP
 	wire [7:0] tmpACCout; //TEMP
 	wire [5:0] tmpIRout; //TEMP
-	wire [8:0] tmpPCout; //TEMP
+	wire [7:0] tmpPCout; //TEMP
+	wire [7:0] tmpMARout; //TEMP
+	wire [1:0] tmpCCout; //TEMP
+	wire [7:0] tmpSPout; //TEMP
 	wire tmpDataReady; //TEMP
 	wire [15:0] tmpIRAMout; //TEMP
 	wire [18:0] tmpIRAMState; //TEMP
 	wire [7:0] tmpIRAMCacheAddr; //TEMP
+	wire [7:0] addrInRAMTEMP;  //TEMP
+	wire [1:0] cacheCntrlTEMP; //TEMP
+	wire [1:0] tmpAddrMode; //TEMP
+	wire [1:0] tmpIRAMctrl; //TEMP
 
 
 	// Instantiate the Unit Under Test (UUT)
@@ -56,13 +63,19 @@ module runProcessor;
 		.outDataReady(outDataReady), 
 		.inACK(inACK),
 		.currState(currState),
-		.tmpACCout(tmpACCout),
-		.tmpIRout(tmpIRout),
-		.tmpPCout(tmpPCout),
-		.tmpDataReady(tmpDataReady),
-		.tmpIRAMout(tmpIRAMout),
-		.tmpIRAMState(tmpIRAMState),
-		.tmpIRAMCacheAddr(tmpIRAMCacheAddr)
+		.addrMode(tmpAddrMode),
+		.ACCout(tmpACCout),
+		.IRout(tmpIRout),
+		.PCout(tmpPCout),
+		.MARout(tmpMARout),
+		.CCout(tmpCCout),
+		.SPout(tmpSPout),
+		.IRAMDataReady(tmpDataReady),
+		.IRAMout(tmpIRAMout),
+		.IRAMctrl(tmpIRAMctrl),
+		.InstMemState(tmpIRAMState),
+		.IRAMCacheAddr(tmpIRAMCacheAddr),
+		.cacheCntrlTEMP(cacheCntrlTEMP)
 	);
 
 	initial begin

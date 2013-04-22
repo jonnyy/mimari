@@ -29,11 +29,11 @@ module IncrReg #(
 		out <= 0;
 	end
 
-    always @(posedge clk) begin
+    always @(negedge clk) begin
         case(ctrl)
             2'b00: out <= out;      // Store
             2'b01: out <= in;       // Load
-            2'b10: out <= out + 1;  // Increment by 1
+            2'b10: out <= out + 8'd1;  // Increment by 1
             2'b11: out <= 0;        // Clear
         endcase
     end

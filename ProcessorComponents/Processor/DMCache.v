@@ -52,7 +52,7 @@ module DMCache(cntrl, clk, addr, dataIn, dataOut, isHit, isClean, dataOutRAM, ad
 			2'b00: begin //CLR
 				for(i=0; i<2**blockAddrBits; i=i+1)
 				begin
-					regArray[i] <= 0;
+					regArray[i] <= 1;
 				end
 			end	
 			2'b01: begin //Check Status
