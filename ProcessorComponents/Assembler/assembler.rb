@@ -28,7 +28,12 @@ class Instruction
 
     def to_binary
         bin = "00"
-        bin << OPCODE_MAP[@opcode]
+        if OPCODE_MAP.has_key? @opcode
+            bin << OPCODE_MAP[@opcode]
+        else
+            STDERR.puts "ERROR: invalid opcode '#{@opcode}'"
+            exit
+        end
         bin << case @addr_mode
             when :immediate then "00"
             when :direct then "10"
@@ -89,22 +94,34 @@ OUTPUT_TYPES = [:verilog, :binary, :prettyprint, :assembly]
 options = {
     :starting_addr => 0,
     :output_type   => :verilog,
-    :output_file   => nil,
-    :input_file    => nil
+    :output_file   => STDOUT,
+    :input_file    => STDIN
 }
 
+# Options for script
 OptionParser.new do |opts|
     opts.banner = "Usage: assembler.rb file [options]"
-    opts.on("-s", "--starting-addr N", Integer, "Start instructions at address N") do |a|
-        options[:starting_addr] = a
+    opts.on("-n", "--starting-addr N", Integer,
+            "Start instructions at address N") do |a|
+        unless a > 255
+            options[:starting_addr] = a
+        else
+            STDERR.puts "ERROR: must start addresses at less than 256"
+            exit
+        end
     end
     opts.on("-t", "--output-type [type]", OUTPUT_TYPES,
-            "Set output type to one of the following:", "    *verilog", "    *binary",
-            "    *prettyprint", "    *assembly", "'prettyprint' displays both binary and the",
-            "associated assembly code") do |t|
+            "Set output type to one of the following:",
+            "    *verilog",
+            "    *binary",
+            "    *prettyprint",
+            "    *assembly", "'prettyprint' displays both binary and the",
+            "associated assembly code",
+            "Default is [verilog]") do |t|
         options[:output_type] = t.to_sym
     end
-    opts.on("-o", "--output-file [file]", String, "write output to [file]") do |f|
+    opts.on("-o", "--output-file [file]", String,
+            "write output to [file]") do |f|
         options[:output_file] = f
     end
     opts.on("-i", "--input-file [file]", String, "take input from [file]") do |f|
@@ -112,37 +129,39 @@ OptionParser.new do |opts|
     end
 end.parse!
 
-infile = String.new
-if options.has_key? :input_file
-    infile = options[:input_file]
-else
-    infile = STDIN
-end
-
 # First pass - read all labels on left column
 inst_count = options[:starting_addr]
 labels = Hash.new
 instructions = Array.new
-File.readlines(infile).each do |line|
+File.readlines(options[:input_file]).each do |line|
     line = line.split
     if line.length == 3
         labels[line.first.downcase.chop] = inst_count
     end
     instructions << line
     inst_count += 1
+    if inst_count > 255
+        STDERR.puts "ERROR: instructions list extends beyond address 255"
+        exit
+    end
 end
 
+# Initialize instructions objects so they know what address to start at and
+# what labels exist in the code
 Instruction.init(options[:starting_addr], labels)
 
-# Second pass - convert to instructions
+# Second pass - convert to desired output format
 instructions.each do |inst|
     i = Instruction.new(*inst)
     case options[:output_type]
     when :verilog
-        puts i.to_verilog
+        options[:output_file].puts i.to_verilog
     when :binary
-        puts i.to_binary
+        options[:output_file].puts i.to_binary
     when :prettyprint
-        puts sprintf("%-20s\t%-s", i.to_assembly, i.to_verilog)
+        options[:output_file].puts sprintf("%-20s\t%-20s\t%-s", i.to_assembly,
+                                                     i.to_binary, i.to_verilog)
+    when :assembly
+        options[:outputfile].puts i.to_assembly
     end
 end
