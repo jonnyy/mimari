@@ -101,6 +101,10 @@ options = {
 # Options for script
 OptionParser.new do |opts|
     opts.banner = "Usage: assembler.rb file [options]"
+    opts.on("-i", "--input-file [file]", String, "take input from [file]",
+            "default STDIN") do |f|
+        options[:input_file] = f
+    end
     opts.on("-n", "--starting-addr N", Integer,
             "Start instructions at address N") do |a|
         unless a > 255
@@ -109,6 +113,10 @@ OptionParser.new do |opts|
             STDERR.puts "ERROR: must start addresses at less than 256"
             exit
         end
+    end
+    opts.on("-o", "--output-file [file]", String,
+            "write output to [file]", "default STDOUT") do |f|
+        options[:output_file] = f
     end
     opts.on("-t", "--output-type [type]", OUTPUT_TYPES,
             "Set output type to one of the following:",
@@ -120,20 +128,13 @@ OptionParser.new do |opts|
             "Default is [verilog]") do |t|
         options[:output_type] = t.to_sym
     end
-    opts.on("-o", "--output-file [file]", String,
-            "write output to [file]") do |f|
-        options[:output_file] = f
-    end
-    opts.on("-i", "--input-file [file]", String, "take input from [file]") do |f|
-        options[:input_file] = f
-    end
 end.parse!
 
 # First pass - read all labels on left column
 inst_count = options[:starting_addr]
-labels = Hash.new
-instructions = Array.new
-File.readlines(options[:input_file]).each do |line|
+labels = {}
+instructions = []
+options[:input_file].each_line do |line|
     if inst_count > 255
         STDERR.puts "ERROR: instructions list extends beyond address 255"
         exit
@@ -162,6 +163,6 @@ instructions.each do |inst|
         options[:output_file].puts sprintf("%-20s\t%-20s\t%-s", i.to_assembly,
                                                      i.to_binary, i.to_verilog)
     when :assembly
-        options[:outputfile].puts i.to_assembly
+        options[:output_file].puts i.to_assembly
     end
 end
