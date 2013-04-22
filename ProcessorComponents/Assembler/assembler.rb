@@ -49,7 +49,7 @@ class Instruction
 
     def to_verilog
         bin = to_binary
-        ret = "regArray[#{@@inst_addr}] = #{bin.length}'b#{bin}"
+        ret = "regArray[#{@@inst_addr}] = #{bin.length}'b#{bin};"
         @@inst_addr += 1
         return ret
     end
