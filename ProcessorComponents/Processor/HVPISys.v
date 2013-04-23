@@ -66,7 +66,7 @@ module HVPISys #(
 	// Interrupt 0 has highest priority.
 	priorityEncoder4bit addrEncode(
 		.i({wAndOut[0],wAndOut[1],wAndOut[2],wAndOut[3]}),
-		.enable(~intDisable),
+		.enable(1'b1),
 		.out(wIntAddr),
 		.noSig(wIsPend)
 	);

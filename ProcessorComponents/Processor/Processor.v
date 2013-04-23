@@ -26,24 +26,23 @@ module Processor #(
 	parameter IRWidth = 6,
 	parameter ccWidth = 2) (
 	input [DRamWidth-1:0] in,
-	input clk, reset, inDataReady, outACK, int0, int1,
+	input clk, reset, inDataReady, outACK,
 	output [DRamWidth-1:0] out,
 	output outDataReady, inACK,
 	output [51:0] currState, //TEMP
 	output [5:0] IRout, // TEMP
-	output [1:0] addrMode, // TEMP
+	//output [1:0] addrMode, // TEMP
 	output [7:0] PCout, ACCout, MARout, SPout, //TEMP
 	output [1:0] CCout, //TEMP
-	output IRAMDataReady, //TEMP
-	output [15:0] IRAMout, //TEMP
-	output [1:0] IRAMctrl, //TEMP
-	output [18:0] InstMemState, DataMemState, //TEMP
+	//output IRAMDataReady, //TEMP
+	//output [15:0] IRAMout, //TEMP
+	//output [1:0] IRAMctrl, //TEMP
+	//output [18:0] InstMemState, DataMemState, //TEMP
 	output [7:0] IRAMCacheAddr, DRAMCacheAddr, //TEMP
-	output [1:0] cacheCntrlTEMP, //TEMP
 	output [3:0] tmpIntReg, //TEMP
 	output [7:0] tmpIsrAddr, //TEMP
-	output tmpIntPending, //TEMP
-	output [7:0] tmpDRAMmuxAddr //TEMP
+	output tmpIntPending //TEMP
+	//output [7:0] tmpDRAMmuxAddr //TEMP
     );
 	
 	// TEMP wires
@@ -111,11 +110,11 @@ module Processor #(
 	assign tmpIntPending = wIntPending;
 	
 	//DRAM
-	assign tmpDRAMmuxAddr = wDaddrIn;
+	//assign tmpDRAMmuxAddr = wDaddrIn;
 	
-	assign IRAMDataReady = wIRAMDataReady;
-	assign IRAMout = wIRAMout;
-	assign IRAMctrl = wIMemCtrl;
+	//assign IRAMDataReady = wIRAMDataReady;
+	//assign IRAMout = wIRAMout;
+	//assign IRAMctrl = wIMemCtrl;
 	
 	ControllerSeq theController(
 		.ir(wIRout),//13:8 {opcode,addrMode}
@@ -172,9 +171,8 @@ module Processor #(
 		.dataIn({dummyVal, dummyVal}), //ramSize input
 		.dataOut(wIRAMout), //ramSize output
 		.dataReady(wIRAMDataReady), // 1 bit output
-		.tmpCacheState(InstMemState),
-		.tmpCacheAddr(IRAMCacheAddr),
-		.cacheCntrlTEMP(cacheCntrlTEMP)
+		//.tmpCacheState(InstMemState),
+		.tmpCacheAddr(IRAMCacheAddr)
 	);	
 	
 	memoryModule #(.addrSize(addrSize), .ramWidth(DRamWidth)) DataRAM(
@@ -186,7 +184,7 @@ module Processor #(
 		.dataIn(wDRAMDataIn), //ramSize input
 		.dataOut(wDRAMout), //ramSize output
 		.dataReady(wDRAMDataReady), // 1 bit output
-		.tmpCacheState(DataMemState),
+		//.tmpCacheState(DataMemState),
 		.tmpCacheAddr(DRAMCacheAddr)
 	);
 	
@@ -198,7 +196,8 @@ module Processor #(
 	
 	mux8x1 #(.size(DRamWidth)) DRAMDataInMux(
 		.sel(wWriteSrc),
-		.inputVal({dummyVal, dummyVal, dummyVal, wMARout, {wCCout, wIRout}, wSPout, wPCout, wACCout}), //size *8 input ({111, 110, 101, 100, 011, 010, 001, 000})
+		//only use Cout[0] in order to clear overflow flag when coming back from isr.  Don't want to interrupt forever
+		.inputVal({dummyVal, dummyVal, dummyVal, wMARout, {1'b0, wCCout[0], wIRout}, wSPout, wPCout, wACCout}), 
 		.y(wDRAMDataIn) //output of size
 	);
 	
@@ -304,7 +303,7 @@ module Processor #(
 		.clrPend(wPendclr),         // Clear the DFF storing whether there's a pending interrupt
 		.intDisable(wIntDisable),   // Disable any interrupts
 		.clk(clk),
-		.ints({inDataReady,int1,int0,wCCout[1]}),    				// Interrupt flags 2**addrLen
+		.ints({outACK, inDataReady, wCCout[1], (wCCout[1] & wCCout[0])}),    				// Interrupt flags 2**addrLen
 		.intMask(wMARout[3:0]), 				// Interrupt masks 2**addrLen
 		.ldMask(wLdMask),
 		.clrMask(wMaskclr),         // Control Mask reg

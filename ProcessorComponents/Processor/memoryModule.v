@@ -28,10 +28,8 @@ module memoryModule #(
 	input [ramWidth-1:0] dataIn,
 	output [ramWidth-1:0] dataOut,
 	output dataReady,
-	output [18:0] tmpCacheState, //TEMP
-	output [7:0] tmpCacheAddr, //TEMP
-	output [7:0] addrInRAMTEMP, //TEMP
-	output [1:0] cacheCntrlTEMP //TEMP
+	//output [18:0] tmpCacheState, //TEMP
+	output [7:0] tmpCacheAddr //TEMP
 	//output [18:0] TEMPstateTEMP,
 	//output [1:0] hitCleanTEMP,
 	//wire [addrSize-1:0] wCacheAddr
@@ -50,8 +48,6 @@ module memoryModule #(
 	wire wAddrInSel, wRAMAddrInSel;
 	
 	assign tmpCacheAddr = wCacheAddr;
-	assign addrInRAMTEMP = wAddrRAM;
-	assign cacheCntrlTEMP = wCacheCntrl;
 
 	DMCache #(.blocksize(1), .ramWidth(ramWidth), .addrWidth(addrSize), .lineSize(ramWidth+6), .blockAddrBits(4)) cache(  
 		.cntrl(wCacheCntrl),
@@ -96,8 +92,8 @@ module memoryModule #(
 		.cacheAddr(wCacheAddr),
 		//.TEMPstateTEMP(TEMPstateTEMP),
 		.addrSel(wAddrInSel),
-		.lockedDataIn(wLockedDataIn),
-		.currState(tmpCacheState)
+		.lockedDataIn(wLockedDataIn)
+		//.currState(tmpCacheState)
 	);
 								
 	mux2x1 #(.size(ramWidth)) dataInSelector (

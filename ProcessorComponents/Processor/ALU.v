@@ -57,7 +57,7 @@ module ALU #(
 			end			
 			3'b110: begin	// Compliment (CMPL)
 				{cout, V} = 0;
-				out = !in1; 
+				out = ~in1; 
 			end 			
 			3'b111: begin
 				{cout, V} = 0;

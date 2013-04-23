@@ -30,7 +30,6 @@ module runProcessor;
 	reg reset;
 	reg inDataReady;
 	reg outACK;
-	reg int0, int1;
 
 	// Outputs
 	wire [7:0] out;
@@ -60,8 +59,6 @@ module runProcessor;
 	// Instantiate the Unit Under Test (UUT)
 	Processor uut (
 		.in(in),
-		.int0(int0),
-		.int1(int1),
 		.clk(clk), 
 		.reset(reset), 
 		.inDataReady(inDataReady), 
@@ -70,25 +67,25 @@ module runProcessor;
 		.outDataReady(outDataReady), 
 		.inACK(inACK),
 		.currState(currState),
-		.addrMode(tmpAddrMode),
+		//.addrMode(tmpAddrMode),
 		.ACCout(tmpACCout),
 		.IRout(tmpIRout),
 		.PCout(tmpPCout),
 		.MARout(tmpMARout),
 		.CCout(tmpCCout),
 		.SPout(tmpSPout),
-		.IRAMDataReady(tmpDataReady),
-		.IRAMout(tmpIRAMout),
-		.IRAMctrl(tmpIRAMctrl),
-		.InstMemState(tmpIRAMState),
-		.DataMemState(DataMemState),
-		.IRAMCacheAddr(tmpIRAMCacheAddr),
-		.DRAMCacheAddr(DRAMCacheAddr),
-		.cacheCntrlTEMP(cacheCntrlTEMP),
-		.tmpIntReg(tmpIntReg),
+		//.IRAMDataReady(tmpDataReady),
+		//.IRAMout(tmpIRAMout),
+		//.IRAMctrl(tmpIRAMctrl),
+		//.InstMemState(tmpIRAMState),
+		//.DataMemState(DataMemState),
+		//.IRAMCacheAddr(tmpIRAMCacheAddr),
+		//.DRAMCacheAddr(DRAMCacheAddr),
+		//.cacheCntrlTEMP(cacheCntrlTEMP),
+		//.tmpIntReg(tmpIntReg),
 		.tmpIsrAddr(tmpIsrAddr),
-		.tmpIntPending(tmpIntPending),
-		.tmpDRAMmuxAddr(tmpDRAMmuxAddr)
+		.tmpIntPending(tmpIntPending)
+		//.tmpDRAMmuxAddr(tmpDRAMmuxAddr)
 	);
 
 	initial begin
@@ -98,8 +95,6 @@ module runProcessor;
 		reset = 0;
 		inDataReady = 0;
 		outACK = 0;
-		int0 = 0;
-		int1 = 0;
 
 		// Wait 100 ns for global reset to finish
 		#100;

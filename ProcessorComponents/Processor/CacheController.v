@@ -29,8 +29,8 @@ module CacheController #(
     output reg [1:0] cacheIn,
 	//output reg [18:0] TEMPstateTEMP,
 	output reg [addrSize-1:0] cacheAddr,
-	output reg [ramWidth-1:0] lockedDataIn,
-	output reg [18:0] currState
+	output reg [ramWidth-1:0] lockedDataIn
+	//output reg [18:0] currState
 	);
     
     parameter start            = 19'b1000000000000000000,
@@ -54,7 +54,7 @@ module CacheController #(
               indirectCheck    = 19'b0000000000000000001;
 
 
-    reg [18:0] /*currState,*/ nextState;
+    reg [18:0] currState, nextState;
 
     always @(currState, isClean, isHit, indirect, ctrl, dataReady) begin
         case(currState)
