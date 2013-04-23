@@ -3,7 +3,7 @@ require 'optparse'
 
 class Instruction
     def initialize(*inst)
-        if inst.length == 3
+        if inst.first =~ /[a-zA-Z][a-zA-Z0-9]+:/
             @label = inst.shift
         else
             @label = nil
@@ -12,10 +12,13 @@ class Instruction
         case inst.first
             when /\$/ then @addr_mode = :indirect
             when /#/ then @addr_mode = :immediate
+            when nil then @addr_mode = :other
             else @addr_mode = :direct
         end
         if @addr_mode == :direct
             @value = inst.first
+        elsif @addr_mode == :other
+            @value = nil
         else
             @value = inst.first[1..-1]
         end
@@ -43,12 +46,16 @@ class Instruction
         bin << case @value
         when /^0x(\h+)$/
 	        $1.hex.to_s(2).rjust(8, '0')
-        when /^0b(0|1)/
+        when /^0b([01]+)$/
             "%08b" % $1.to_i(2)
         when /^([a-zA-Z][a-zA-Z0-9]+)$/
+            if !@@labels.has_key? $1
+                STDERR.puts "ERROR: cannot find label #{$1}"
+                exit
+            end
             "%08b" % @@labels[$1]
         else
-            "%08b" % @value.to_i
+            ("%08b" % @value.to_i).tr('^01', '')
         end
     end
 
@@ -60,10 +67,15 @@ class Instruction
     end
 
     def to_assembly
+        addr_mode_char = case @addr_mode
+                         when :indirect then '$'
+                         when :immediate then '#'
+                         else ''
+                         end
         if @label == nil
-            "#{@opcode} #{@value}"
+            "#{@opcode} #{addr_mode_char}#{@value}"
         else
-            "#{@label} #{@opcode} #{@value}"
+            "#{@label} #{@opcode} #{addr_mode_char}#{@value}"
         end
     end
 
@@ -134,17 +146,32 @@ end.parse!
 inst_count = options[:starting_addr]
 labels = {}
 instructions = []
+<<<<<<< HEAD
 infile = STDIN
 if options[:input_file] != STDIN
     infile = File.open(options[:input_file], "r")
 end
 infile.each_line do |line|
+=======
+
+# Conditionally choose input source
+infile = 0
+if options[:input_file] == STDIN
+    infile = STDIN
+else
+    infile = File.readlines(options[:input_file])
+end
+
+# Read each line
+infile.each do |line|
+    line.gsub!('%.*$', '')
+>>>>>>> 3e2eecf96141f05d050c53dc33d73aad570faa6e
     if inst_count > 255
         STDERR.puts "ERROR: instructions list extends beyond address 255"
         exit
     end
     line = line.split
-    if line.length == 3
+    if line.first =~ /[a-zA-Z][a-zA-Z0-9]+:/
         labels[line.first.downcase.chop] = inst_count
     end
     instructions << line

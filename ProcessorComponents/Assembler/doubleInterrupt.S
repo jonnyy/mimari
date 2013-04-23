@@ -8,5 +8,6 @@ ST 0
 LD #127
 ADD $0
 LD $0
+out
 ST 0
 sym: jmp #sym

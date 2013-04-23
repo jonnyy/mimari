@@ -1,4 +1,4 @@
-LD 120
+LD #120
 ADD #1
 ST 120
 ret
